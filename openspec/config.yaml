@@ -1,0 +1,20 @@
+schema: spec-driven
+
+context: |
+  Hoops Fantasy is a free-to-play fantasy basketball game for Irish domestic leagues
+  (Basketball Ireland Super League first, then Division 1 and National League Division 2).
+  Stats come from an external box-score feed (assumed NBN23 / Swish All-Hoops style data);
+  the feed format is not final, so ingestion must sit behind an adapter interface.
+  Stack: Next.js (PWA, no native apps for MVP), Supabase (Postgres, Auth, Realtime),
+  a scheduled worker for ingestion and scoring, hosted on Vercel + Supabase.
+  The game MUST stay free to play with no cash prizes or paid entry, to stay outside
+  Ireland's Gambling Regulation Act 2024 licensing.
+  Users are adults (18+); underage competitions are out of scope. Follow GDPR data minimisation.
+  All times are Europe/Dublin. Currency-like budgets use abstract "credits", never euro.
+
+rules:
+  proposal:
+    - Always state what is out of scope
+  tasks:
+    - Break tasks into chunks of at most 2 hours of evening work
+    - Every behaviour task pairs with a test task
