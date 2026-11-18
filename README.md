@@ -15,7 +15,27 @@ Each folder in `openspec/changes/` is one change with a proposal, specs, design 
 
 Later changes, not yet specced: live in-game scoring, form-based price changes, transfers and autosubs, Division 1 and National League D2.
 
-## Working with it
+## Running the app
+
+Needs Node 22+.
+
+```bash
+npm install
+npm test             # 54 tests; runs the real migrations on an in-memory Postgres, no Docker needed
+npm run typecheck
+npm run dev
+```
+
+To sync the mock season into a real database:
+
+1. Create a Supabase project (or run `supabase start` locally) and apply `supabase/migrations/` (`supabase db push`, or paste them into the SQL editor in order).
+2. Copy `.env.example` to `.env.local` and set `DATABASE_URL`, `CRON_SECRET` and `ADMIN_TOKEN`.
+3. Trigger a sync: `curl -X POST "http://localhost:3000/api/cron/ingest?force=1" -H "Authorization: Bearer $CRON_SECRET"`
+4. Upload a box score by hand at `/admin/import` using your `ADMIN_TOKEN`.
+
+After deploying, run `supabase/schedule-ingestion.sql` once in the Supabase SQL editor to sync every 15 minutes.
+
+## Planning with OpenSpec
 
 ```bash
 npm install -g @fission-ai/openspec@latest
