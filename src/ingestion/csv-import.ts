@@ -1,6 +1,6 @@
 import type { Db } from "@/lib/db";
 import { STAT_KEYS, type StatValues } from "./feed/types";
-import { emptyCounts, writeBoxScore } from "./ingest";
+import { emptyCounts, scoreTouchedFixture, writeBoxScore } from "./ingest";
 import { statLineProblems } from "./validate";
 
 /**
@@ -178,6 +178,7 @@ export async function importFixtureCsv(
     });
     // An uploaded box score is a finished game.
     await tx.query(`update fixtures set status = 'final', updated_at = $2 where id = $1`, [fixture.id, now]);
+    await scoreTouchedFixture(tx, fixture.id, now, counts);
   });
   counts.boxScores = 1;
   await db.query(

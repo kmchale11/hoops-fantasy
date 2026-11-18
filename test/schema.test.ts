@@ -11,11 +11,15 @@ describe("database migrations", () => {
     );
     expect(tables.map((t) => t.table_name)).toEqual([
       "competitions",
+      "fixture_rounds",
       "fixtures",
       "ingestion_runs",
+      "player_fantasy_points",
       "player_game_stats",
+      "player_round_points",
       "player_team_history",
       "players",
+      "rounds",
       "teams",
     ]);
   });

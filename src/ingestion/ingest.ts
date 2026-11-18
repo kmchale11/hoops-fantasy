@@ -1,4 +1,5 @@
 import type { Db } from "@/lib/db";
+import { scoreFixture } from "@/scoring/score-fixture";
 import type {
   FeedAdapter,
   FeedBoxScore,
@@ -18,6 +19,7 @@ export interface IngestionCounts {
   fixtures: { added: number; updated: number };
   boxScores: number;
   statLines: { added: number; updated: number; corrected: number; removed: number };
+  fantasyPoints: { fixtures: number; changed: number; removed: number };
 }
 
 export interface IngestionResult {
@@ -45,6 +47,7 @@ export function emptyCounts(): IngestionCounts {
     fixtures: { added: 0, updated: 0 },
     boxScores: 0,
     statLines: { added: 0, updated: 0, corrected: 0, removed: 0 },
+    fantasyPoints: { fixtures: 0, changed: 0, removed: 0 },
   };
 }
 
@@ -107,13 +110,19 @@ export async function runIngestion(
         const { id, previousStatus } = await upsertFixture(db, comp.id, fixture, teamIds, now, counts);
 
         // Postponed and scheduled games have no stats worth reading yet.
-        if (fixture.status !== "live" && fixture.status !== "final") continue;
+        const hasStats = fixture.status === "live" || fixture.status === "final";
+        const box = hasStats ? await adapter.getBoxScore(fixture.externalId) : null;
 
-        const box = await adapter.getBoxScore(fixture.externalId);
-        // Only a change to an already-final game is a correction; live games change constantly.
-        const flagCorrections = previousStatus === "final" && fixture.status === "final";
-        await writeBoxScore(db, id, box, { now, flagCorrections, counts });
-        counts.boxScores++;
+        // Stats and fantasy points for a fixture are written together or not at all.
+        await db.transaction(async (tx) => {
+          if (box) {
+            // Only a change to an already-final game is a correction; live games change constantly.
+            const flagCorrections = previousStatus === "final" && fixture.status === "final";
+            await writeBoxScore(tx, id, box, { now, flagCorrections, counts });
+          }
+          await scoreTouchedFixture(tx, id, now, counts);
+        });
+        if (box) counts.boxScores++;
       }
     }
 
@@ -124,6 +133,14 @@ export async function runIngestion(
     await finishRun(db, run.id, "failed", counts, now, message);
     return { runId: run.id, status: "failed", counts, error: message };
   }
+}
+
+/** Rescores a fixture this run touched; every fixture in the sync window counts as touched. */
+export async function scoreTouchedFixture(db: Db, fixtureId: number, now: Date, counts: IngestionCounts) {
+  const result = await scoreFixture(db, fixtureId, now);
+  counts.fantasyPoints.fixtures++;
+  counts.fantasyPoints.changed += result.changed;
+  counts.fantasyPoints.removed += result.removed;
 }
 
 async function finishRun(
