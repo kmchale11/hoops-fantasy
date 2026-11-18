@@ -9,8 +9,11 @@ export interface AppConfig {
   databaseUrl: string | undefined;
   /** Shared secret the scheduler sends as a Bearer token to the cron endpoint. */
   cronSecret: string | undefined;
-  /** Temporary admin token for the CSV import until user accounts and roles exist. */
-  adminToken: string | undefined;
+  /** Supabase project URL and publishable (anon) key, for sign-in. */
+  supabaseUrl: string | undefined;
+  supabasePublishableKey: string | undefined;
+  /** Supabase secret (service role) key. Server only: used to delete accounts. */
+  supabaseSecretKey: string | undefined;
 }
 
 type Env = Record<string, string | undefined>;
@@ -33,6 +36,8 @@ export function loadConfig(env: Env = process.env): AppConfig {
     mockStage: rawStage as 1 | 2 | 3,
     databaseUrl: env.DATABASE_URL || undefined,
     cronSecret: env.CRON_SECRET || undefined,
-    adminToken: env.ADMIN_TOKEN || undefined,
+    supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL || undefined,
+    supabasePublishableKey: env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || undefined,
+    supabaseSecretKey: env.SUPABASE_SECRET_KEY || undefined,
   };
 }

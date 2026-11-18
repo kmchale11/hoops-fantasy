@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { requireAdminPage } from "@/lib/guards";
 import ImportForm from "./import-form";
 
 export const metadata: Metadata = {
@@ -6,7 +7,11 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
-export default function ImportPage() {
+// Checks the admin role per request; non-admins get a 404.
+export const instant = false;
+
+export default async function ImportPage() {
+  await requireAdminPage();
   return (
     <main>
       <h1>Import a box score</h1>

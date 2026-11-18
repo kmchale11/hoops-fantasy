@@ -15,6 +15,7 @@
 - [ ] 3.2 `save_squad()` Postgres function enforcing rules and deadline in one transaction
 - [ ] 3.3 Round-lock job that carries forward the latest squad
 - [ ] 3.4 Tests: change before and after deadline, carry-forward, direct insert blocked
+- [ ] 3.5 `squads.user_id` references the user with `on delete cascade` (account deletion, `add-user-accounts`), with a test
 
 ## 4. Squad builder UI
 

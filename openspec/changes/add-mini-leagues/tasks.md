@@ -11,6 +11,7 @@
 - [ ] 2.3 Create league and share-code screen
 - [ ] 2.4 Join-by-code flow
 - [ ] 2.5 Tests: create, join, invalid code, double join blocked, non-member blocked
+- [ ] 2.6 Account deletion (`add-user-accounts`): `league_members.user_id` cascades on user delete, and a league whose admin is deleted passes admin to its longest-standing member (or is deleted if empty). Test: a user in two leagues is deleted and vanishes from both tables
 
 ## 3. Standings and management
 

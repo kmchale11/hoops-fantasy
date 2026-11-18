@@ -29,9 +29,17 @@ npm run dev
 To sync the mock season into a real database:
 
 1. Create a Supabase project (or run `supabase start` locally) and apply `supabase/migrations/` (`supabase db push`, or paste them into the SQL editor in order).
-2. Copy `.env.example` to `.env.local` and set `DATABASE_URL`, `CRON_SECRET` and `ADMIN_TOKEN`.
+2. Copy `.env.example` to `.env.local` and set `DATABASE_URL`, `CRON_SECRET` and the Supabase URL and keys.
 3. Trigger a sync: `curl -X POST "http://localhost:3000/api/cron/ingest?force=1" -H "Authorization: Bearer $CRON_SECRET"`
-4. Upload a box score by hand at `/admin/import` using your `ADMIN_TOKEN`.
+4. Sign in at `/sign-in` and finish sign-up, then make yourself an admin in the SQL editor:
+   `update profiles set is_admin = true where team_name = '<your team>';`
+5. Upload a box score by hand at `/admin/import`.
+
+Sign-in uses Supabase Auth. Locally, `supabase/config.toml` sets magic links to expire after 1 hour, uses the
+`supabase/templates/magic-link.html` email, and turns on Google sign-in (set the two
+`SUPABASE_AUTH_EXTERNAL_GOOGLE_*` variables first). On a hosted project, set the same things in the dashboard:
+Authentication → Email (OTP expiry 3600, the magic-link and confirm-signup templates), → Sign In / Providers →
+Google, and → URL Configuration (site URL plus `<site>/auth/callback` as a redirect URL).
 
 After deploying, run `supabase/schedule-ingestion.sql` once in the Supabase SQL editor to sync every 15 minutes.
 

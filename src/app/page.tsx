@@ -10,6 +10,7 @@ export default function Home() {
         and scores every player&apos;s games.
       </p>
       <p>
+        <Link href="/sign-in">Sign in</Link> · <Link href="/account">Your account</Link> ·{" "}
         <Link href="/scoring">How scoring works</Link>
       </p>
     </main>

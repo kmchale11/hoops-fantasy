@@ -1,11 +1,10 @@
-import { hasBearerSecret, unauthorized } from "@/lib/auth";
-import { loadConfig } from "@/lib/config";
+import { adminRouteError } from "@/lib/guards";
 import { getDb } from "@/lib/server-db";
 
 /** Recent and upcoming fixtures, for the CSV import picker. */
-export async function GET(request: Request) {
-  // Temporary: replaced by the is_admin role in add-user-accounts.
-  if (!hasBearerSecret(request, loadConfig().adminToken)) return unauthorized();
+export async function GET() {
+  const denied = await adminRouteError();
+  if (denied) return denied;
 
   const fixtures = await getDb().query(
     `select f.external_id as "externalId", f.tip_off as "tipOff", f.status,

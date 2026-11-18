@@ -1,14 +1,13 @@
 import { importFixtureCsv } from "@/ingestion/csv-import";
-import { hasBearerSecret, unauthorized } from "@/lib/auth";
-import { loadConfig } from "@/lib/config";
+import { adminRouteError } from "@/lib/guards";
 import { getDb } from "@/lib/server-db";
 
 const MAX_CSV_BYTES = 200_000;
 
 /** Body: { fixtureExternalId: string, csv: string } */
 export async function POST(request: Request) {
-  // Temporary: replaced by the is_admin role in add-user-accounts.
-  if (!hasBearerSecret(request, loadConfig().adminToken)) return unauthorized();
+  const denied = await adminRouteError();
+  if (denied) return denied;
 
   let body: unknown;
   try {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import styles from "./import.module.css";
+import { useEffect, useState } from "react";
+import styles from "@/app/forms.module.css";
 
 interface FixtureOption {
   externalId: string;
@@ -36,31 +36,24 @@ const dateFormat = new Intl.DateTimeFormat("en-IE", {
 });
 
 export default function ImportForm() {
-  const [token, setToken] = useState("");
   const [fixtures, setFixtures] = useState<FixtureOption[] | null>(null);
   const [fixtureId, setFixtureId] = useState("");
   const [csv, setCsv] = useState("");
   const [busy, setBusy] = useState(false);
   const [outcome, setOutcome] = useState<Outcome | null>(null);
 
-  const headers = () => ({ Authorization: `Bearer ${token}`, "Content-Type": "application/json" });
-
-  async function loadFixtures() {
-    setBusy(true);
-    setOutcome(null);
-    try {
-      const res = await fetch("/api/admin/fixtures", { headers: headers() });
-      if (res.status === 401) throw new Error("That admin token wasn't accepted.");
-      if (!res.ok) throw new Error("Couldn't load fixtures.");
-      const data = (await res.json()) as { fixtures: FixtureOption[] };
-      setFixtures(data.fixtures);
-      setFixtureId(data.fixtures.find((f) => f.status !== "postponed")?.externalId ?? "");
-    } catch (e) {
-      setOutcome({ kind: "error", message: e instanceof Error ? e.message : String(e) });
-    } finally {
-      setBusy(false);
-    }
-  }
+  useEffect(() => {
+    // The admin session cookie authenticates these requests.
+    fetch("/api/admin/fixtures")
+      .then(async (res) => {
+        if (res.status === 401 || res.status === 403) throw new Error("Your session has ended. Sign in again.");
+        if (!res.ok) throw new Error("Couldn't load fixtures.");
+        const data = (await res.json()) as { fixtures: FixtureOption[] };
+        setFixtures(data.fixtures);
+        setFixtureId(data.fixtures.find((f) => f.status !== "postponed")?.externalId ?? "");
+      })
+      .catch((e) => setOutcome({ kind: "error", message: e instanceof Error ? e.message : String(e) }));
+  }, []);
 
   async function readFile(file: File | undefined) {
     if (file) setCsv(await file.text());
@@ -73,7 +66,7 @@ export default function ImportForm() {
     try {
       const res = await fetch("/api/admin/import", {
         method: "POST",
-        headers: headers(),
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fixtureExternalId: fixtureId, csv }),
       });
       const data = await res.json();
@@ -90,21 +83,7 @@ export default function ImportForm() {
   if (!fixtures) {
     return (
       <div className={styles.card}>
-        <label className={styles.label} htmlFor="token">
-          Admin token
-        </label>
-        <input
-          id="token"
-          className={styles.input}
-          type="password"
-          autoComplete="off"
-          value={token}
-          onChange={(e) => setToken(e.target.value)}
-        />
-        <button className={styles.button} disabled={!token || busy} onClick={loadFixtures}>
-          {busy ? "Checking…" : "Continue"}
-        </button>
-        {outcome?.kind === "error" && <p className={styles.error}>{outcome.message}</p>}
+        {outcome?.kind === "error" ? <p className={styles.error}>{outcome.message}</p> : <p>Loading fixtures…</p>}
       </div>
     );
   }

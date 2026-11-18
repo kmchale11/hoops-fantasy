@@ -1,15 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Db } from "@/lib/db";
-import { count, createTestDb } from "./helpers/db";
+import { createProfile } from "@/accounts/profile";
+import { auth, redirectOf, resetAuth } from "./helpers/auth";
+import { count, createAuthUser, createTestDb } from "./helpers/db";
 
 let testDb: Db;
 vi.mock("server-only", () => ({}));
-vi.mock("@/lib/server-db", () => ({ getDb: () => testDb }));
+vi.mock("@/lib/supabase/server", async () => (await import("./helpers/auth")).supabaseServerMock);
+vi.mock("@/lib/server-db", async () => (await import("./helpers/auth")).serverDbMock);
 
 const { POST: cron } = await import("@/app/api/cron/ingest/route");
 const { POST: importCsv } = await import("@/app/api/admin/import/route");
 const { GET: listFixtures } = await import("@/app/api/admin/fixtures/route");
 const { hasBearerSecret } = await import("@/lib/auth");
+const { default: ImportPage } = await import("@/app/admin/import/page");
 
 const req = (url: string, init: RequestInit & { token?: string } = {}) =>
   new Request(`http://localhost${url}`, {
@@ -19,8 +23,8 @@ const req = (url: string, init: RequestInit & { token?: string } = {}) =>
 
 beforeEach(async () => {
   ({ db: testDb } = await createTestDb());
+  resetAuth(testDb);
   vi.stubEnv("CRON_SECRET", "cron-secret");
-  vi.stubEnv("ADMIN_TOKEN", "admin-token");
   vi.stubEnv("FEED_SOURCE", "mock");
   vi.stubEnv("MOCK_STAGE", "1");
 });
@@ -61,34 +65,79 @@ describe("POST /api/cron/ingest", () => {
   });
 });
 
-describe("admin endpoints", () => {
-  it("require the admin token", async () => {
-    expect((await listFixtures(req("/api/admin/fixtures", { token: "cron-secret" }))).status).toBe(401);
-    const res = await importCsv(
-      req("/api/admin/import", { method: "POST", body: JSON.stringify({ fixtureExternalId: "x", csv: "" }) }),
+/** Signs in a new user; with a profile unless `profile` is false, and an admin if `admin`. */
+async function signIn({ admin = false, profile = true } = {}) {
+  const id = await createAuthUser(testDb, `${admin ? "admin" : "player"}@example.ie`);
+  if (profile) {
+    await createProfile(
+      testDb,
+      id,
+      { managerName: "Someone", teamName: admin ? "Admin Team" : "Player Team", ageConfirmed: true, termsAccepted: true },
+      new Date(),
     );
-    expect(res.status).toBe(401);
+    if (admin) await testDb.query(`update profiles set is_admin = true where user_id = $1`, [id]);
+  }
+  auth.user = { id, email: "someone@example.ie" };
+}
+
+const BAD_UPLOAD = JSON.stringify({
+  fixtureExternalId: "mock-f-r3-g1",
+  csv: "player_name,team,minutes,pts,reb,ast,stl,blk,tov,fgm,fga,ftm,fta\nNobody,Ballina Braves,1,0,0,0,0,0,0,0,0,0,0",
+});
+
+describe("admin endpoints", () => {
+  const callBoth = async () => [
+    (await listFixtures()).status,
+    (await importCsv(req("/api/admin/import", { method: "POST", body: BAD_UPLOAD }))).status,
+  ];
+
+  it("reject signed-out visitors with 401", async () => {
+    expect(await callBoth()).toEqual([401, 401]);
   });
 
-  it("returns 422 with row errors for a bad upload", async () => {
+  it("reject signed-in users who aren't admins with 403", async () => {
+    await signIn();
+    expect(await callBoth()).toEqual([403, 403]);
+  });
+
+  it("reject users who haven't finished signing up with 403", async () => {
+    await signIn({ profile: false });
+    expect(await callBoth()).toEqual([403, 403]);
+  });
+
+  it("let an admin list fixtures", async () => {
     await cron(req("/api/cron/ingest", { method: "POST", token: "cron-secret" }));
-    const res = await importCsv(
-      req("/api/admin/import", {
-        method: "POST",
-        token: "admin-token",
-        body: JSON.stringify({
-          fixtureExternalId: "mock-f-r3-g1",
-          csv: "player_name,team,minutes,pts,reb,ast,stl,blk,tov,fgm,fga,ftm,fta\nNobody,Ballina Braves,1,0,0,0,0,0,0,0,0,0,0",
-        }),
-      }),
-    );
+    await signIn({ admin: true });
+    const res = await listFixtures();
+    expect(res.status).toBe(200);
+    expect((await res.json()).fixtures.length).toBeGreaterThan(0);
+  });
+
+  it("let an admin import, returning 422 with row errors for a bad upload", async () => {
+    await cron(req("/api/cron/ingest", { method: "POST", token: "cron-secret" }));
+    await signIn({ admin: true });
+    const res = await importCsv(req("/api/admin/import", { method: "POST", body: BAD_UPLOAD }));
     expect(res.status).toBe(422);
     const body = await res.json();
     expect(body.errors[0].row).toBe(2);
   });
 
-  it("rejects a body that isn't the expected JSON", async () => {
-    const res = await importCsv(req("/api/admin/import", { method: "POST", token: "admin-token", body: "nope" }));
+  it("reject a body that isn't the expected JSON", async () => {
+    await signIn({ admin: true });
+    const res = await importCsv(req("/api/admin/import", { method: "POST", body: "nope" }));
     expect(res.status).toBe(400);
+  });
+});
+
+describe("admin import page", () => {
+  it("is a 404 for anyone but an admin", async () => {
+    expect(await redirectOf(() => ImportPage())).toBe("404");
+    await signIn();
+    expect(await redirectOf(() => ImportPage())).toBe("404");
+  });
+
+  it("renders for an admin", async () => {
+    await signIn({ admin: true });
+    expect(await redirectOf(() => ImportPage())).toBeUndefined();
   });
 });

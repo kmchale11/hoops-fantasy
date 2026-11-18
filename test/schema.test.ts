@@ -19,6 +19,7 @@ describe("database migrations", () => {
       "player_round_points",
       "player_team_history",
       "players",
+      "profiles",
       "rounds",
       "teams",
     ]);
