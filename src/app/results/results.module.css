@@ -1,0 +1,42 @@
+.total {
+  font-size: 1.2rem;
+}
+
+.round {
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.h2 {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  margin: 0 0 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+  font-weight: 400;
+}
+
+.num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.captain {
+  color: var(--muted);
+  font-size: 0.9rem;
+}

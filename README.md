@@ -21,7 +21,7 @@ Needs Node 22+.
 
 ```bash
 npm install
-npm test             # 54 tests; runs the real migrations on an in-memory Postgres, no Docker needed
+npm test             # 151 tests; runs the real migrations on an in-memory Postgres, no Docker needed
 npm run typecheck
 npm run dev
 ```
@@ -33,7 +33,9 @@ To sync the mock season into a real database:
 3. Trigger a sync: `curl -X POST "http://localhost:3000/api/cron/ingest?force=1" -H "Authorization: Bearer $CRON_SECRET"`
 4. Sign in at `/sign-in` and finish sign-up, then make yourself an admin in the SQL editor:
    `update profiles set is_admin = true where team_name = '<your team>';`
-5. Upload a box score by hand at `/admin/import`.
+5. Set player prices at `/admin/prices` (by hand or from a CSV), and add the season's rounds to the `rounds` table.
+   Unpriced players can't be picked.
+6. Upload a box score by hand at `/admin/import` if the feed is down.
 
 Sign-in uses Supabase Auth. Locally, `supabase/config.toml` sets magic links to expire after 1 hour, uses the
 `supabase/templates/magic-link.html` email, and turns on Google sign-in (set the two

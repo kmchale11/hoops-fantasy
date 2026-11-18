@@ -1,0 +1,144 @@
+.builder {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.flush {
+  margin: 0;
+}
+
+.h2 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.budget {
+  margin: 0;
+}
+
+.over {
+  color: var(--danger);
+}
+
+.squad {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.squad li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.captain {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.captain input {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-contrast);
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+.rules {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  color: var(--danger);
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 8px 8px 8px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.table th[scope="row"] {
+  font-weight: 500;
+}
+
+.num {
+  text-align: right !important;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.team {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.unavailable {
+  color: var(--muted);
+}
+
+.add,
+.remove {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 5.5em;
+}
+
+.add {
+  color: var(--accent-contrast);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.remove {
+  color: var(--foreground);
+  background: var(--background);
+  border: 1px solid var(--border);
+}
+
+.add:disabled,
+.remove:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

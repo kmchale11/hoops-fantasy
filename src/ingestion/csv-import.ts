@@ -1,4 +1,5 @@
 import type { Db } from "@/lib/db";
+import { refreshUserScores } from "@/squads/squads";
 import { STAT_KEYS, type StatValues } from "./feed/types";
 import { emptyCounts, scoreTouchedFixture, writeBoxScore } from "./ingest";
 import { statLineProblems } from "./validate";
@@ -180,6 +181,7 @@ export async function importFixtureCsv(
     await tx.query(`update fixtures set status = 'final', updated_at = $2 where id = $1`, [fixture.id, now]);
     await scoreTouchedFixture(tx, fixture.id, now, counts);
   });
+  await refreshUserScores(db);
   counts.boxScores = 1;
   await db.query(
     `update ingestion_runs set status = 'succeeded', counts = $2, finished_at = $3 where id = $1`,

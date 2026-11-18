@@ -1,0 +1,21 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 6px 8px 6px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.table th[scope="row"] {
+  font-weight: 500;
+}
+
+.price {
+  width: 6.5em;
+  padding: 6px 8px;
+}

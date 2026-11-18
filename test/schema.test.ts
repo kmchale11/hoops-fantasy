@@ -16,11 +16,15 @@ describe("database migrations", () => {
       "ingestion_runs",
       "player_fantasy_points",
       "player_game_stats",
+      "player_prices",
       "player_round_points",
       "player_team_history",
       "players",
       "profiles",
+      "round_deadlines",
       "rounds",
+      "squad_players",
+      "squads",
       "teams",
     ]);
   });

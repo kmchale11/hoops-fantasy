@@ -1,5 +1,6 @@
 import type { Db } from "@/lib/db";
 import { scoreFixture } from "@/scoring/score-fixture";
+import { refreshUserScores } from "@/squads/squads";
 import type {
   FeedAdapter,
   FeedBoxScore,
@@ -126,6 +127,8 @@ export async function runIngestion(
       }
     }
 
+    // Corrections and new points flow into every user's round scores.
+    await refreshUserScores(db);
     await finishRun(db, run.id, "succeeded", counts, now);
     return { runId: run.id, status: "succeeded", counts };
   } catch (error) {
