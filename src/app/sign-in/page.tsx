@@ -13,6 +13,8 @@ export const instant = false;
 const MESSAGES: Record<string, string> = {
   expired: "That sign-in link has expired or has already been used. Enter your email and we'll send you a new one.",
   failed: "Something went wrong signing you in. Please try again.",
+  "other-device":
+    "That sign-in link was opened on a different phone, browser or app from the one you asked for it on, so it can't sign you in here. Enter your email below and we'll send a new link to use on this device.",
 };
 
 export default async function SignInPage({ searchParams }: PageProps<"/sign-in">) {

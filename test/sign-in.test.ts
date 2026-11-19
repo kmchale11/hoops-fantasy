@@ -53,6 +53,25 @@ describe("magic link sign-in", () => {
     expect(location(res)).toBe("/account");
   });
 
+  it("explains a link opened on another device and offers a new one", async () => {
+    auth.client.auth.exchangeCodeForSession.mockResolvedValueOnce({
+      data: {},
+      error: { code: "pkce_code_verifier_not_found", message: "PKCE code verifier not found in storage." },
+    });
+    const res = await visit("code=xyz");
+    expect(location(res)).toBe("/sign-in?error=other-device");
+
+    const html = renderToStaticMarkup(
+      await SignInPage({
+        params: Promise.resolve({}),
+        searchParams: Promise.resolve({ error: "other-device" }),
+      } as PageProps<"/sign-in">),
+    );
+    expect(html).toContain("opened on a different phone, browser or app");
+    expect(html).toContain("send a new link to use on this device");
+    expect(html).toContain('type="email"');
+  });
+
   it("never redirects off-site after signing in", async () => {
     expect(location(await visit("code=xyz&next=%2F%2Fevil.example"))).toBe("/squad");
     expect(location(await visit("code=xyz&next=https%3A%2F%2Fevil.example"))).toBe("/squad");

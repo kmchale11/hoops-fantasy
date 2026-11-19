@@ -14,6 +14,10 @@ export interface AppConfig {
   supabasePublishableKey: string | undefined;
   /** Supabase secret (service role) key. Server only: used to delete accounts. */
   supabaseSecretKey: string | undefined;
+  /** Web Push keys, for notifications on the website and installed web app. */
+  vapid: { publicKey: string; privateKey: string; subject: string } | undefined;
+  /** Firebase service account, for notifications in the iOS and Android apps. */
+  firebase: { projectId: string; clientEmail: string; privateKey: string } | undefined;
 }
 
 type Env = Record<string, string | undefined>;
@@ -39,5 +43,18 @@ export function loadConfig(env: Env = process.env): AppConfig {
     supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL || undefined,
     supabasePublishableKey: env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || undefined,
     supabaseSecretKey: env.SUPABASE_SECRET_KEY || undefined,
+    vapid:
+      env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY && env.VAPID_SUBJECT
+        ? { publicKey: env.NEXT_PUBLIC_VAPID_PUBLIC_KEY, privateKey: env.VAPID_PRIVATE_KEY, subject: env.VAPID_SUBJECT }
+        : undefined,
+    firebase:
+      env.FIREBASE_PROJECT_ID && env.FIREBASE_CLIENT_EMAIL && env.FIREBASE_PRIVATE_KEY
+        ? {
+            projectId: env.FIREBASE_PROJECT_ID,
+            clientEmail: env.FIREBASE_CLIENT_EMAIL,
+            // Hosting dashboards store the key's line breaks as "\n".
+            privateKey: env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+          }
+        : undefined,
   };
 }

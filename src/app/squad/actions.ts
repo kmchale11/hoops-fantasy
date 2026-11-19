@@ -3,11 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { getDb } from "@/lib/server-db";
 import { getAccount } from "@/lib/session";
-import { saveSquad } from "@/squads/squads";
+import { getNotificationSettings } from "@/notifications/settings";
+import { getLatestSquad, saveSquad } from "@/squads/squads";
 
 export interface SaveSquadState {
   errors: string[];
   savedAt: string | null;
+  /** True after a user's first squad save, if they haven't turned notifications on yet. */
+  offerReminders?: boolean;
 }
 
 /** Saves the builder's squad. The database checks the rules and the deadline. */
@@ -25,8 +28,11 @@ export async function saveSquadAction(_prev: SaveSquadState, formData: FormData)
     return { errors: ["That squad couldn't be read. Reload the page and try again."], savedAt: null };
   }
 
-  const result = await saveSquad(getDb(), account.user.id, ids, captain);
+  const db = getDb();
+  const firstSquad = (await getLatestSquad(db, account.user.id)) === null;
+  const result = await saveSquad(db, account.user.id, ids, captain);
   if (!result.ok) return { errors: result.errors, savedAt: null };
   revalidatePath("/squad");
-  return { errors: [], savedAt: new Date().toISOString() };
+  const offerReminders = firstSquad && !(await getNotificationSettings(db, account.user.id)).enabled;
+  return { errors: [], savedAt: new Date().toISOString(), offerReminders };
 }

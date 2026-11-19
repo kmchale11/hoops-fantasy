@@ -2,12 +2,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Db } from "@/lib/db";
 import { createProfile } from "@/accounts/profile";
 import { auth, redirectOf, resetAuth } from "./helpers/auth";
+import { registerDevice, saveNotificationSettings } from "@/notifications/settings";
 import { count, createAuthUser, createTestDb } from "./helpers/db";
+import { addFixture, addManager, addRound } from "./helpers/league";
+
+const DAY = 24 * 3600 * 1000;
 
 let testDb: Db;
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/supabase/server", async () => (await import("./helpers/auth")).supabaseServerMock);
 vi.mock("@/lib/server-db", async () => (await import("./helpers/auth")).serverDbMock);
+const webPush = vi.hoisted(() => ({ sendNotification: vi.fn() }));
+vi.mock("web-push", async (original) => ({ ...(await original()), sendNotification: webPush.sendNotification }));
 
 const { POST: cron } = await import("@/app/api/cron/ingest/route");
 const { POST: importCsv } = await import("@/app/api/admin/import/route");
@@ -55,6 +61,34 @@ describe("POST /api/cron/ingest", () => {
     const body = await second.json();
     expect(body.ran).toBe(false);
     expect(body.reason).toMatch(/next run in about/);
+  });
+
+  it("sends due notifications on every tick, even in a quiet period", async () => {
+    vi.stubEnv("NEXT_PUBLIC_VAPID_PUBLIC_KEY", "public-key");
+    vi.stubEnv("VAPID_PRIVATE_KEY", "private-key");
+    vi.stubEnv("VAPID_SUBJECT", "mailto:hello@hoopsfantasy.ie");
+    webPush.sendNotification.mockReset().mockResolvedValue({ statusCode: 201 });
+    await cron(req("/api/cron/ingest", { method: "POST", token: "cron-secret" }));
+
+    // Niamh wants reminders, and the next round locks in just over an hour.
+    const niamh = await addManager(testDb, "Niamh");
+    await saveNotificationSettings(testDb, niamh, { enabled: true, deadlineReminders: true, roundResults: true }, new Date());
+    await registerDevice(testDb, niamh, {
+      kind: "web",
+      endpoint: "https://push.example/niamh",
+      webKeys: { p256dh: "key", auth: "auth" },
+      platform: "web",
+    });
+    const now = Date.now();
+    await addRound(testDb, 9, new Date(now - DAY), new Date(now + 2 * DAY));
+    await addFixture(testDb, 1, 2, new Date(now + 65 * 60 * 1000));
+
+    const res = await cron(req("/api/cron/ingest", { method: "POST", token: "cron-secret" }));
+    const body = await res.json();
+    expect(body).toMatchObject({ ran: false, notifications: { sent: 1, failed: 0, removed: 0 } });
+    expect(body.reason).toMatch(/quiet period/);
+    expect(webPush.sendNotification).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(webPush.sendNotification.mock.calls[0][1])).toMatchObject({ url: "/squad" });
   });
 
   it("runs regardless of schedule with ?force=1", async () => {

@@ -1,0 +1,121 @@
+player_external_id,player_name,team,price
+mock-p-bal-00,Conor Hughes,Ballina Braves,10.0
+mock-p-bal-01,Kieran Ryan,Ballina Braves,10.5
+mock-p-bal-02,Tadhg Byrne,Ballina Braves,11.5
+mock-p-bal-03,Shane O'Brien,Ballina Braves,11.0
+mock-p-bal-04,Andre Byrne,Ballina Braves,10.5
+mock-p-bal-05,Cian Williams,Ballina Braves,8.0
+mock-p-bal-06,Andre Doherty,Ballina Braves,7.0
+mock-p-bal-07,Niall Moran,Ballina Braves,8.0
+mock-p-bal-08,Marcus Quinn,Ballina Braves,7.0
+mock-p-bal-09,Oisín Murphy,Ballina Braves,7.0
+mock-p-bal-10,Pádraig Brennan,Ballina Braves,4.0
+mock-p-bal-11,Seán Duffy,Ballina Braves,4.0
+mock-p-wes-00,Tadhg Quinn,Westport Waves,15.0
+mock-p-wes-01,Niall Walsh,Westport Waves,14.5
+mock-p-wes-02,Niall Kelly,Westport Waves,11.5
+mock-p-wes-03,Shane O'Brien,Westport Waves,13.0
+mock-p-wes-04,Ronan Murphy,Westport Waves,11.0
+mock-p-wes-05,Andre Williams,Westport Waves,8.0
+mock-p-wes-06,Darragh Duffy,Westport Waves,7.0
+mock-p-wes-07,Tadhg Ryan,Westport Waves,8.0
+mock-p-wes-08,Kieran Moran,Westport Waves,7.5
+mock-p-wes-09,Tadhg Moran,Westport Waves,8.0
+mock-p-wes-10,Oisín Quinn,Westport Waves,4.0
+mock-p-wes-11,Fionn Brennan,Westport Waves,4.0
+mock-p-cas-00,Conor Reilly,Castlebar Comets,10.0
+mock-p-cas-01,Fionn Ryan,Castlebar Comets,13.0
+mock-p-cas-02,Jamal Moran,Castlebar Comets,14.0
+mock-p-cas-03,Fionn Murphy,Castlebar Comets,12.0
+mock-p-cas-04,Andre Flynn,Castlebar Comets,11.5
+mock-p-cas-05,Ronan Ryan,Castlebar Comets,8.0
+mock-p-cas-06,Rory Walsh,Castlebar Comets,7.5
+mock-p-cas-07,Dylan Moran,Castlebar Comets,8.5
+mock-p-cas-08,Oisín Lynch,Castlebar Comets,6.5
+mock-p-cas-09,Conor Reilly,Castlebar Comets,5.5
+mock-p-cas-10,Aaron Kelly,Castlebar Comets,4.0
+mock-p-cas-11,Eoin Byrne,Castlebar Comets,4.0
+mock-p-sli-00,Darragh Kelly,Sligo Surge,13.5
+mock-p-sli-01,Aaron Williams,Sligo Surge,14.0
+mock-p-sli-02,Dylan Duffy,Sligo Surge,12.5
+mock-p-sli-03,Conor Joyce,Sligo Surge,12.0
+mock-p-sli-04,Kieran Reilly,Sligo Surge,11.5
+mock-p-sli-05,Conor Quinn,Sligo Surge,7.5
+mock-p-sli-06,Eoin Duffy,Sligo Surge,6.5
+mock-p-sli-07,Aaron Duffy,Sligo Surge,6.5
+mock-p-sli-08,Shane Lynch,Sligo Surge,7.5
+mock-p-sli-09,Seán Quinn,Sligo Surge,10.0
+mock-p-sli-10,Jamal Doherty,Sligo Surge,4.0
+mock-p-sli-11,Kieran Kelly,Sligo Surge,4.0
+mock-p-gal-00,Conor Brennan,Galway Gales,13.0
+mock-p-gal-01,Niall Gallagher,Galway Gales,11.0
+mock-p-gal-02,Tadhg Murphy,Galway Gales,13.5
+mock-p-gal-03,Oisín Hughes,Galway Gales,11.0
+mock-p-gal-04,Cian Reilly,Galway Gales,12.0
+mock-p-gal-05,Andre Joyce,Galway Gales,9.0
+mock-p-gal-06,Conor Walsh,Galway Gales,8.5
+mock-p-gal-07,Liam Gallagher,Galway Gales,8.0
+mock-p-gal-08,Eoin Doherty,Galway Gales,6.5
+mock-p-gal-09,Andre Duffy,Galway Gales,7.5
+mock-p-gal-10,Seán Williams,Galway Gales,4.0
+mock-p-gal-11,Pádraig Hughes,Galway Gales,4.0
+mock-p-lim-00,Cian Walsh,Limerick Lynx,11.0
+mock-p-lim-01,Shane O'Brien,Limerick Lynx,10.5
+mock-p-lim-02,Andre Hughes,Limerick Lynx,11.5
+mock-p-lim-03,Dylan Quinn,Limerick Lynx,12.5
+mock-p-lim-04,Niall Carey,Limerick Lynx,12.0
+mock-p-lim-05,Tadhg Flynn,Limerick Lynx,8.0
+mock-p-lim-06,Rory Nolan,Limerick Lynx,8.0
+mock-p-lim-07,Niall Byrne,Limerick Lynx,7.5
+mock-p-lim-08,Rory Carey,Limerick Lynx,8.0
+mock-p-lim-09,Ronan O'Brien,Limerick Lynx,9.0
+mock-p-lim-10,Eoin Kelly,Limerick Lynx,4.0
+mock-p-lim-11,Fionn Doherty,Limerick Lynx,4.0
+mock-p-cor-00,Andre Gallagher,Cork Harbour Hawks,13.0
+mock-p-cor-01,Kieran Duffy,Cork Harbour Hawks,15.0
+mock-p-cor-02,Shane Williams,Cork Harbour Hawks,12.5
+mock-p-cor-03,Liam Nolan,Cork Harbour Hawks,10.5
+mock-p-cor-04,Cian Williams,Cork Harbour Hawks,13.5
+mock-p-cor-05,Shane Brennan,Cork Harbour Hawks,7.5
+mock-p-cor-06,Dylan Carey,Cork Harbour Hawks,9.0
+mock-p-cor-07,Eoin Doherty,Cork Harbour Hawks,7.5
+mock-p-cor-08,Niall Gallagher,Cork Harbour Hawks,8.5
+mock-p-cor-09,Liam Williams,Cork Harbour Hawks,7.5
+mock-p-cor-10,Marcus Kelly,Cork Harbour Hawks,4.0
+mock-p-cor-11,Ronan Moran,Cork Harbour Hawks,4.0
+mock-p-dub-00,Jamal Duffy,Dublin Docklands,12.5
+mock-p-dub-01,Tadhg Quinn,Dublin Docklands,12.5
+mock-p-dub-02,Conor Duffy,Dublin Docklands,13.0
+mock-p-dub-03,Marcus Gallagher,Dublin Docklands,13.0
+mock-p-dub-04,Marcus Lynch,Dublin Docklands,12.0
+mock-p-dub-05,Niall Hughes,Dublin Docklands,7.5
+mock-p-dub-06,Oisín Hughes,Dublin Docklands,8.5
+mock-p-dub-07,Darragh Walsh,Dublin Docklands,9.0
+mock-p-dub-08,Aaron Walsh,Dublin Docklands,9.0
+mock-p-dub-09,Dylan Duffy,Dublin Docklands,8.0
+mock-p-dub-10,Darragh Brennan,Dublin Docklands,4.0
+mock-p-dub-11,Dylan Gallagher,Dublin Docklands,4.0
+mock-p-ath-00,Niall Walsh,Athlone Arrows,11.0
+mock-p-ath-01,Niall Nolan,Athlone Arrows,11.5
+mock-p-ath-02,Conor Ryan,Athlone Arrows,11.5
+mock-p-ath-03,Rory Flynn,Athlone Arrows,13.0
+mock-p-ath-04,Shane Brennan,Athlone Arrows,13.5
+mock-p-ath-05,Tadhg Quinn,Athlone Arrows,7.0
+mock-p-ath-06,Oisín Williams,Athlone Arrows,9.0
+mock-p-ath-07,Jamal Ryan,Athlone Arrows,8.5
+mock-p-ath-08,Aaron Murphy,Athlone Arrows,8.5
+mock-p-ath-09,Ronan Duffy,Athlone Arrows,8.5
+mock-p-ath-10,Dylan Lynch,Athlone Arrows,4.0
+mock-p-ath-11,Oisín Flynn,Athlone Arrows,4.0
+mock-p-tra-00,Liam Doherty,Tralee Titans,14.5
+mock-p-tra-01,Eoin Kelly,Tralee Titans,13.0
+mock-p-tra-02,Dylan Hughes,Tralee Titans,12.5
+mock-p-tra-03,Ronan Joyce,Tralee Titans,11.0
+mock-p-tra-04,Rory Lynch,Tralee Titans,14.0
+mock-p-tra-05,Pádraig Byrne,Tralee Titans,7.0
+mock-p-tra-06,Seán Nolan,Tralee Titans,8.5
+mock-p-tra-07,Rory Hughes,Tralee Titans,8.5
+mock-p-tra-08,Aaron Quinn,Tralee Titans,7.0
+mock-p-tra-09,Liam Duffy,Tralee Titans,8.0
+mock-p-tra-10,Liam Gallagher,Tralee Titans,4.0
+mock-p-tra-11,Fionn Williams,Tralee Titans,4.0

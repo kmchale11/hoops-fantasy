@@ -6,6 +6,12 @@ import { createClient } from "@/lib/supabase/server";
 const EMAIL_OTP_TYPES: EmailOtpType[] = ["email", "magiclink", "signup"];
 
 /**
+ * A ?code= sign-in only finishes in the browser or app that started it, which holds the PKCE
+ * code verifier. These are what Supabase reports when it's opened somewhere else.
+ */
+const OTHER_DEVICE_ERRORS = ["pkce_code_verifier_not_found", "bad_code_verifier", "flow_state_not_found"];
+
+/**
  * Where sign-in links land. Magic links arrive with ?token_hash=…&type=email (see
  * supabase/templates/magic-link.html); Google sign-in arrives with ?code=…. On success the
  * visitor goes to `next`, which sends anyone who hasn't finished sign-up to /welcome.
@@ -34,8 +40,11 @@ export async function GET(request: Request) {
   }
 
   if (result.error) {
+    const errorCode = result.error.code ?? "";
     // Expired and already-used links both come back as otp_expired.
-    return to(`/sign-in?error=${result.error.code === "otp_expired" ? "expired" : "failed"}`);
+    if (errorCode === "otp_expired") return to("/sign-in?error=expired");
+    if (OTHER_DEVICE_ERRORS.includes(errorCode)) return to("/sign-in?error=other-device");
+    return to("/sign-in?error=failed");
   }
   return to(safeNext(params.get("next")));
 }

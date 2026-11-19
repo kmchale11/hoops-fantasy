@@ -1,0 +1,48 @@
+.offline {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 10px 16px;
+  padding-top: max(10px, env(safe-area-inset-top));
+  text-align: center;
+  font-size: 0.95rem;
+  color: var(--accent-contrast);
+  background: var(--foreground);
+}
+
+.install {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 12px 16px;
+  margin: 0 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.install p {
+  flex: 1 1 200px;
+  margin: 0;
+}
+
+.install button {
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.primary {
+  color: var(--accent-contrast);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.dismiss {
+  color: var(--foreground);
+  background: transparent;
+  border: 1px solid var(--border);
+}

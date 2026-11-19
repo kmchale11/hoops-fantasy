@@ -51,7 +51,15 @@ export default async function AccountPage() {
           <Link href="/welcome?next=/account">Finish setting up your team</Link>
         </p>
       )}
-      <p className="muted">Your squads and league memberships are your game data, shown where you play.</p>
+      <p className="muted">
+        Your squads and league memberships are your game data, shown where you play. If you turn on
+        notifications, we also keep an address for each device you get them on.
+      </p>
+      {profile && (
+        <p>
+          <Link href="/account/notifications">Notification settings</Link>
+        </p>
+      )}
 
       <form action={signOut}>
         <button className={styles.secondary} type="submit">

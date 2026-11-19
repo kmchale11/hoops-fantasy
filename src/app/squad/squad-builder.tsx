@@ -4,6 +4,7 @@ import { useActionState, useEffect, useMemo, useState } from "react";
 import styles from "@/app/forms.module.css";
 import type { PlayerListing } from "@/squads/players";
 import { BUDGET, SQUAD_SIZE, squadRuleErrors } from "@/squads/rules";
+import ReminderCard from "@/app/account/notifications/reminder-card";
 import { saveSquadAction, type SaveSquadState } from "./actions";
 import local from "./squad.module.css";
 
@@ -25,6 +26,8 @@ export interface SquadBuilderProps {
   pointsRound: string | null;
   /** Server time as an ISO timestamp, so the first render matches on server and client. */
   now: string;
+  /** Web Push public key; null when notifications aren't set up, so none are offered. */
+  vapidPublicKey?: string | null;
 }
 
 const deadlineFormat = new Intl.DateTimeFormat("en-IE", {
@@ -185,6 +188,7 @@ export default function SquadBuilder(props: SquadBuilderProps) {
         )}
         {state.savedAt && state.errors.length === 0 && <p className={styles.success}>Squad saved.</p>}
       </form>
+      {state.offerReminders && props.vapidPublicKey && <ReminderCard vapidPublicKey={props.vapidPublicKey} />}
 
       <section className={styles.card}>
         <h2 className={local.h2}>Players</h2>
