@@ -15,7 +15,7 @@
 - [x] 2.2 Notification settings screen: master switch plus deadline and results toggles, defaulting both on; test that toggles persist and that results-only stops deadline sends
 - [x] 2.3 "Turn on reminders?" card after the first squad save that triggers the permission prompt only on tap; test that the card appears once and that declining leaves notifications off with help text shown
 - [x] 2.4 Web push subscription: generate VAPID keys, register the subscription on opt-in, store it, and verify with a test that the stored endpoint matches the browser subscription
-- [ ] 2.5 Document the VAPID and Firebase environment variables in `.env.example` and verify `npm run build` fails clearly when they're missing in production
+- [x] 2.5 Document the VAPID and Firebase environment variables in `.env.example` and verify `npm run build` fails clearly when they're missing in production
 
 ## 3. Notification sending
 

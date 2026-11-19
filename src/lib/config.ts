@@ -58,3 +58,21 @@ export function loadConfig(env: Env = process.env): AppConfig {
         : undefined,
   };
 }
+
+const WEB_PUSH_VARS = ["NEXT_PUBLIC_VAPID_PUBLIC_KEY", "VAPID_PRIVATE_KEY", "VAPID_SUBJECT"];
+const NATIVE_PUSH_VARS = ["FIREBASE_PROJECT_ID", "FIREBASE_CLIENT_EMAIL", "FIREBASE_PRIVATE_KEY"];
+
+/**
+ * The settings a production deploy can't do without, or null when all are set. Web Push is
+ * always required; Firebase only once NATIVE_PUSH_ENABLED is "true" (the phone apps are live).
+ */
+export function missingProductionSettings(env: Env = process.env): string | null {
+  const nativePush = (env.NATIVE_PUSH_ENABLED ?? "").trim().toLowerCase() === "true";
+  const required = [...WEB_PUSH_VARS, ...(nativePush ? NATIVE_PUSH_VARS : [])];
+  const missing = required.filter((name) => !env[name]?.trim());
+  if (missing.length === 0) return null;
+  return (
+    `Missing settings for a production build: ${missing.join(", ")}. ` +
+    `Push notifications can't be sent without them; see .env.example.`
+  );
+}
