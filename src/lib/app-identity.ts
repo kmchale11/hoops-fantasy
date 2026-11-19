@@ -4,6 +4,8 @@
  */
 export const APP_ID = "ie.hoopsfantasy.app";
 export const APP_NAME = "Hoops Fantasy";
+/** The live website the native app loads. A placeholder until the domain is confirmed. */
+export const PRODUCTION_URL = "https://hoopsfantasy.ie";
 /** Google sign-in returns to the app through this scheme (see design.md). */
 export const APP_URL_SCHEME = APP_ID;
 

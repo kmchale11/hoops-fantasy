@@ -47,6 +47,21 @@ Google, and → URL Configuration (site URL plus `<site>/auth/callback` as a red
 
 After deploying, run `supabase/schedule-ingestion.sql` once in the Supabase SQL editor to sync every 15 minutes.
 
+### Phone apps
+
+`mobile/` holds the iOS and Android apps: Capacitor shells that load the live website (`PRODUCTION_URL` in
+`src/lib/app-identity.ts`, which also sets the app ID and name). Needs Android Studio, opened once so it installs
+the Android SDK, and an emulator created in its Device Manager.
+
+```bash
+cd mobile && npm install
+npm run android:local   # loads the site running on this Mac (`npm run build && npx next start` in the root)
+npm run android:build   # debug build against the live site
+npm run android:open    # open the project in Android Studio
+```
+
+The Gradle wrapper is 9.1 rather than Capacitor's 8.14, because Android Studio's bundled Java 25 needs it.
+
 ## Planning with OpenSpec
 
 ```bash
