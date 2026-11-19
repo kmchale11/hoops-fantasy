@@ -53,7 +53,8 @@ export default async function AccountPage() {
       )}
       <p className="muted">
         Your squads and league memberships are your game data, shown where you play. If you turn on
-        notifications, we also keep an address for each device you get them on.
+        notifications, we also keep an address for each device you get them on. See the{" "}
+        <Link href="/privacy">privacy notice</Link>.
       </p>
       {profile && (
         <p>

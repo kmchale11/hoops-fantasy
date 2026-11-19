@@ -20,7 +20,8 @@ export default async function NotificationsPage() {
       </p>
       <h1>Notifications</h1>
       <p className="muted">
-        We only send what you choose here, to devices where you&apos;ve turned notifications on.
+        We only send what you choose here, to devices where you&apos;ve turned notifications on. The{" "}
+        <Link href="/privacy">privacy notice</Link> explains what we keep for this.
       </p>
       <NotificationSettings initial={settings} vapidPublicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || null} />
     </main>

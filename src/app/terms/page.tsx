@@ -18,7 +18,9 @@ export default function TermsPage() {
         <li>You must be 18 or over to play.</li>
         <li>
           We keep your email address, manager name, team name, when you agreed to these terms and
-          your game data, and nothing else. You can see all of it on your account page.
+          your game data, plus device addresses if you turn on notifications, and nothing else. You
+          can see all of it on your account page and read the details in the{" "}
+          <Link href="/privacy">privacy notice</Link>.
         </li>
         <li>You can delete your account at any time, which removes your data.</li>
         <li>Manager and team names are public. Don&apos;t use anything offensive or impersonate anyone.</li>

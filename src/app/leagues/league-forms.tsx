@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, useSyncExternalStore } from "react";
 import styles from "@/app/forms.module.css";
 import { createLeagueAction, joinLeagueAction, type LeagueFormState } from "./actions";
 
@@ -74,23 +74,56 @@ export function JoinLeagueForm({ code = "" }: { code?: string }) {
   );
 }
 
-/** Copies the full invite link, built from the address the user is on. */
-export function CopyInviteLink({ path }: { path: string }) {
+const noSubscribe = () => () => {};
+
+/** The invite message: the league name and its full /join/<code> link, built from the address the user is on. */
+export function inviteMessage(leagueName: string, path: string, origin: string) {
+  const url = new URL(path, origin).toString();
+  return { title: `Join ${leagueName} on Hoops Fantasy`, text: `Join my league "${leagueName}" on Hoops Fantasy`, url };
+}
+
+/**
+ * Shares or copies a league invite. Where the browser has a share sheet (phones, and some
+ * desktops), "Share invite" opens it; copying the link always works as well.
+ */
+export function ShareInvite({ leagueName, path }: { leagueName: string; path: string }) {
   const [copied, setCopied] = useState(false);
+  // Only known in the browser, so the server renders without the share button.
+  const canShare = useSyncExternalStore(
+    noSubscribe,
+    () => typeof navigator.share === "function",
+    () => false,
+  );
+  const message = () => inviteMessage(leagueName, path, window.location.href);
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(message().url);
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  async function share() {
+    try {
+      await navigator.share(message());
+    } catch (error) {
+      // Closing the share sheet isn't a failure; anything else falls back to copying.
+      if (!(error instanceof DOMException && error.name === "AbortError")) await copy();
+    }
+  }
+
   return (
-    <button
-      type="button"
-      className={styles.secondary}
-      onClick={async () => {
-        try {
-          await navigator.clipboard.writeText(new URL(path, window.location.href).toString());
-          setCopied(true);
-        } catch {
-          setCopied(false);
-        }
-      }}
-    >
-      {copied ? "Link copied" : "Copy invite link"}
-    </button>
+    <>
+      {canShare && (
+        <button type="button" className={styles.button} onClick={share}>
+          Share invite
+        </button>
+      )}
+      <button type="button" className={styles.secondary} onClick={copy}>
+        {copied ? "Link copied" : "Copy invite link"}
+      </button>
+    </>
   );
 }

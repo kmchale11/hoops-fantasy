@@ -21,7 +21,7 @@ Needs Node 22+.
 
 ```bash
 npm install
-npm test             # 232 tests; runs the real migrations on an in-memory Postgres, no Docker needed
+npm test             # 236 tests; runs the real migrations on an in-memory Postgres, no Docker needed
 npm run typecheck
 npm run test:e2e     # browser tests (offline screen, notifications); first run: npx playwright install chromium
 npm run dev

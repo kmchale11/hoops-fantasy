@@ -6,7 +6,7 @@ import { getLeague, LEAGUE_PAGE_ERRORS } from "@/leagues/leagues";
 import { requireCompleteAccount } from "@/lib/guards";
 import { getDb } from "@/lib/server-db";
 import { leaveLeagueAction, regenerateCodeAction, removeMemberAction } from "../actions";
-import { CopyInviteLink, JoinLeagueForm } from "../league-forms";
+import { JoinLeagueForm, ShareInvite } from "../league-forms";
 
 export const metadata: Metadata = { title: "League · Hoops Fantasy" };
 
@@ -94,7 +94,7 @@ export default async function LeaguePage({ params, searchParams }: PageProps<"/l
         <p className={styles.hint}>
           Anyone with this code can join. Send them the code or this link: <Link href={invitePath}>{invitePath}</Link>
         </p>
-        <CopyInviteLink path={invitePath} />
+        <ShareInvite leagueName={league.name} path={invitePath} />
         {league.isAdmin && (
           <form action={regenerateCodeAction}>
             <input type="hidden" name="league" value={league.id} />
