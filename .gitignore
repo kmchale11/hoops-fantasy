@@ -46,5 +46,6 @@ next-env.d.ts
 /playwright-report/
 /test-results/
 
-# Native app dependencies (mobile/ has its own package.json)
+# Native app dependencies (mobile/ has its own package.json) and its generated web files
 /mobile/node_modules/
+/mobile/www/

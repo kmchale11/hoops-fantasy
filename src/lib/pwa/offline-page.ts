@@ -1,7 +1,7 @@
 /**
  * The offline screen: one self-contained HTML document (inline styles, no scripts beyond the
  * retry button), so it renders with no network at all. The service worker caches it, and the
- * native app bundles the same file.
+ * native app bundles a copy (APP_OFFLINE_HTML).
  */
 export const OFFLINE_HTML = `<!doctype html>
 <html lang="en-IE">
@@ -48,3 +48,20 @@ export const OFFLINE_HTML = `<!doctype html>
 </body>
 </html>
 `;
+
+/**
+ * The native app's copy, written into mobile/www/ at each sync. The app shows it whenever the
+ * website fails to load, which on Android includes error responses, so it doesn't claim the
+ * phone is offline. It's served from inside the app, so "Try again" goes to the website's
+ * start page by its full address.
+ */
+export function appOfflineHtml(siteUrl: string): string {
+  const start = JSON.stringify(new URL("/start", siteUrl).href).replace(/"/g, "&quot;");
+  return OFFLINE_HTML.replace("<title>No connection · Hoops Fantasy</title>", "<title>Hoops Fantasy</title>")
+    .replace("<h1>You're offline</h1>", "<h1>Can't reach Hoops Fantasy</h1>")
+    .replace(
+      "Hoops Fantasy needs a connection to show your squad and scores. Check your signal or Wi-Fi, then try again.",
+      "Your squad and scores need a connection. Check your signal or Wi-Fi, then try again.",
+    )
+    .replace(`onclick="location.reload()"`, `onclick="location.replace(${start})"`);
+}

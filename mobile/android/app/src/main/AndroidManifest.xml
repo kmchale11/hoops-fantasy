@@ -22,6 +22,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- League invites and sign-in links open in the app (Android App Links). Android
+                 checks the website's /.well-known/assetlinks.json before trusting this. Keep the
+                 host and paths in step with src/lib/app-identity.ts. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="hoopsfantasy.ie" />
+                <data android:pathPrefix="/join/" />
+                <data android:pathPrefix="/auth/callback" />
+            </intent-filter>
+
         </activity>
 
         <provider

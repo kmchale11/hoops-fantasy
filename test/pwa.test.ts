@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { auth, redirectOf, resetAuth } from "./helpers/auth";
 import { createTestDb } from "./helpers/db";
 import { addManager } from "./helpers/league";
+import { appOfflineHtml } from "@/lib/pwa/offline-page";
 
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/supabase/server", async () => (await import("./helpers/auth")).supabaseServerMock);
@@ -45,6 +46,14 @@ describe("offline screen", () => {
     expect(html).toContain('onclick="location.reload()"');
     // Nothing it needs comes from the network.
     expect(html).not.toMatch(/<(link|script)[^>]+(href|src)=/);
+  });
+
+  it("has a native app copy that restarts the app on the website when retried", () => {
+    const html = appOfflineHtml("https://hoops.test");
+    expect(html).toContain("Can't reach Hoops Fantasy");
+    expect(html).toContain(`onclick="location.replace(&quot;https://hoops.test/start&quot;)"`);
+    expect(html).not.toMatch(/<(link|script)[^>]+(href|src)=/);
+    expect(readFileSync("mobile/capacitor.config.ts", "utf8")).toContain('errorPath: "offline.html"');
   });
 });
 

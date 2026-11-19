@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import NativeLinks from "./pwa/native-links";
 import OfflineBanner from "./pwa/offline-banner";
 import ServiceWorker from "./pwa/service-worker";
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <OfflineBanner />
         {children}
         <ServiceWorker />
+        <NativeLinks />
       </body>
     </html>
   );

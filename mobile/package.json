@@ -4,13 +4,14 @@
   "type": "module",
   "description": "The iOS and Android apps: Capacitor shells that load the live website.",
   "scripts": {
-    "sync": "cap sync",
-    "android:local": "APP_URL=http://10.0.2.2:3000 cap sync android && JAVA_HOME=${JAVA_HOME:-'/Applications/Android Studio.app/Contents/jbr/Contents/Home'} cap run android",
-    "android:build": "cap sync android && cd android && JAVA_HOME=${JAVA_HOME:-'/Applications/Android Studio.app/Contents/jbr/Contents/Home'} ./gradlew assembleDebug",
+    "sync": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/write-web-dir.ts && cap sync",
+    "android:local": "APP_URL=http://10.0.2.2:3000 npm run sync -- android && JAVA_HOME=${JAVA_HOME:-'/Applications/Android Studio.app/Contents/jbr/Contents/Home'} cap run android",
+    "android:build": "npm run sync -- android && cd android && JAVA_HOME=${JAVA_HOME:-'/Applications/Android Studio.app/Contents/jbr/Contents/Home'} ./gradlew assembleDebug",
     "android:open": "cap open android"
   },
   "dependencies": {
     "@capacitor/android": "^8.6.2",
+    "@capacitor/app": "^8.1.2",
     "@capacitor/core": "^8.6.2"
   },
   "devDependencies": {
