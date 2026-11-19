@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The brand green, as on the website (theme_color in src/app/manifest.ts). -->
+    <color name="splash_background">#0B6E4F</color>
+</resources>

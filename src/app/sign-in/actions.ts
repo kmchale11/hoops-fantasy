@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { APP_URL_SCHEME } from "@/lib/app-identity";
 import { safeNext } from "@/lib/guards";
 import { requestOrigin } from "@/lib/origin";
 import { createClient } from "@/lib/supabase/server";
@@ -41,6 +42,24 @@ export async function signInWithGoogle(formData: FormData) {
   });
   if (error || !data.url) redirect("/sign-in?error=failed");
   redirect(data.url);
+}
+
+/**
+ * Google sign-in from the iOS and Android apps. Google won't run inside the app's web view, so
+ * the app opens the returned address in the phone's browser sheet. Google then sends the user
+ * back to the app's own link scheme, and the app finishes at /auth/callback in its web view,
+ * which holds the code verifier this call stores. Null if sign-in can't start.
+ */
+export async function appGoogleSignInUrl(next: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${APP_URL_SCHEME}://auth/callback?next=${encodeURIComponent(safeNext(next))}`,
+      skipBrowserRedirect: true,
+    },
+  });
+  return error || !data.url ? null : data.url;
 }
 
 export async function signOut() {

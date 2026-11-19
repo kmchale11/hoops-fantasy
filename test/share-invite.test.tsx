@@ -58,6 +58,25 @@ describe("ShareInvite", () => {
     expect(button("Copy invite link")).toBeDefined();
   });
 
+  it("uses the phone's own share sheet in the app", async () => {
+    const share = vi.fn().mockRejectedValue(new Error("Share canceled"));
+    (globalThis as { Capacitor?: unknown }).Capacitor = { isNativePlatform: () => true, Plugins: { Share: { share } } };
+    try {
+      render();
+      await click("Share invite");
+      expect(share).toHaveBeenCalledWith({
+        title: "Join Thursday Ballers on Hoops Fantasy",
+        text: 'Join my league "Thursday Ballers" on Hoops Fantasy',
+        url: LINK,
+        dialogTitle: "Share invite",
+      });
+      // Android can report "cancelled" after a successful share, so nothing is copied.
+      expect(writeText).not.toHaveBeenCalled();
+    } finally {
+      delete (globalThis as { Capacitor?: unknown }).Capacitor;
+    }
+  });
+
   it("only offers copying where there's no share sheet", async () => {
     render();
     expect(button("Share invite")).toBeUndefined();

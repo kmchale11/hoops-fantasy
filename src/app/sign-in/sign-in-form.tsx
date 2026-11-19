@@ -1,11 +1,23 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import styles from "@/app/forms.module.css";
-import { sendMagicLink, signInWithGoogle, type MagicLinkState } from "./actions";
+import { nativeShell } from "@/lib/native/shell";
+import { appGoogleSignInUrl, sendMagicLink, signInWithGoogle, type MagicLinkState } from "./actions";
+
+/** In the app, Google sign-in opens in the phone's browser sheet instead of the web view. */
+async function googleInApp(event: React.FormEvent<HTMLFormElement>, next: string, failed: () => void) {
+  const browser = nativeShell()?.Plugins.Browser;
+  if (!browser) return;
+  event.preventDefault();
+  const url = await appGoogleSignInUrl(next);
+  if (url) await browser.open({ url });
+  else failed();
+}
 
 export default function SignInForm({ next }: { next: string }) {
   const [state, action, pending] = useActionState<MagicLinkState, FormData>(sendMagicLink, { status: "idle" });
+  const [googleFailed, setGoogleFailed] = useState(false);
 
   if (state.status === "sent") {
     return (
@@ -43,11 +55,16 @@ export default function SignInForm({ next }: { next: string }) {
           </p>
         )}
       </form>
-      <form action={signInWithGoogle}>
+      <form action={signInWithGoogle} onSubmit={(event) => googleInApp(event, next, () => setGoogleFailed(true))}>
         <input type="hidden" name="next" value={next} />
         <button className={styles.secondary} type="submit">
           Continue with Google
         </button>
+        {googleFailed && (
+          <p className={styles.error} role="alert">
+            We couldn&apos;t start Google sign-in. Try again, or use your email address.
+          </p>
+        )}
       </form>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useActionState, useState, useSyncExternalStore } from "react";
 import styles from "@/app/forms.module.css";
+import { nativeShell } from "@/lib/native/shell";
 import { createLeagueAction, joinLeagueAction, type LeagueFormState } from "./actions";
 
 export function CreateLeagueForm() {
@@ -83,15 +84,16 @@ export function inviteMessage(leagueName: string, path: string, origin: string) 
 }
 
 /**
- * Shares or copies a league invite. Where the browser has a share sheet (phones, and some
- * desktops), "Share invite" opens it; copying the link always works as well.
+ * Shares or copies a league invite. In the iOS and Android apps "Share invite" opens the
+ * phone's share sheet, and in browsers that have one (phones, and some desktops) the
+ * browser's; copying the link always works as well.
  */
 export function ShareInvite({ leagueName, path }: { leagueName: string; path: string }) {
   const [copied, setCopied] = useState(false);
   // Only known in the browser, so the server renders without the share button.
   const canShare = useSyncExternalStore(
     noSubscribe,
-    () => typeof navigator.share === "function",
+    () => Boolean(nativeShell()?.Plugins.Share) || typeof navigator.share === "function",
     () => false,
   );
   const message = () => inviteMessage(leagueName, path, window.location.href);
@@ -106,6 +108,13 @@ export function ShareInvite({ leagueName, path }: { leagueName: string; path: st
   }
 
   async function share() {
+    const nativeShare = nativeShell()?.Plugins.Share;
+    if (nativeShare) {
+      // Android reports "cancelled" even after some apps share successfully, so a rejection
+      // here means nothing more to do; the copy button is still there.
+      await nativeShare.share({ ...message(), dialogTitle: "Share invite" }).catch(() => {});
+      return;
+    }
     try {
       await navigator.share(message());
     } catch (error) {

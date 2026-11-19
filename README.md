@@ -21,7 +21,7 @@ Needs Node 22+.
 
 ```bash
 npm install
-npm test             # 241 tests; runs the real migrations on an in-memory Postgres, no Docker needed
+npm test             # 242 tests; runs the real migrations on an in-memory Postgres, no Docker needed
 npm run typecheck
 npm run test:e2e     # browser tests (offline screen, notifications); first run: npx playwright install chromium
 npm run dev
@@ -58,7 +58,11 @@ cd mobile && npm install
 npm run android:local   # loads the site running on this Mac (`npm run build && npx next start` in the root)
 npm run android:build   # debug build against the live site
 npm run android:open    # open the project in Android Studio
+npm run assets -- --android  # app icons and splash screens, from mobile/assets
 ```
+
+The icon and splash source images in `mobile/assets` come from `node scripts/make-icons.mjs` (in the root), which
+draws the website's icons too.
 
 The Gradle wrapper is 9.1 rather than Capacitor's 8.14, because Android Studio's bundled Java 25 needs it.
 

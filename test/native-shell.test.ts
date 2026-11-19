@@ -15,6 +15,13 @@ describe("links opened in the app", () => {
     );
   });
 
+  it("finishes Google sign-in returning on the app's own scheme", () => {
+    expect(inAppPath("ie.hoopsfantasy.app://auth/callback?code=abc&next=%2Fsquad")).toBe(
+      "/auth/callback?code=abc&next=%2Fsquad",
+    );
+    expect(inAppPath("ie.hoopsfantasy.app://somewhere/else")).toBeNull();
+  });
+
   it("ignores other pages, other websites and anything that isn't https", () => {
     expect(inAppPath("https://hoopsfantasy.ie/admin/prices")).toBeNull();
     expect(inAppPath("https://hoopsfantasy.ie/joined")).toBeNull();

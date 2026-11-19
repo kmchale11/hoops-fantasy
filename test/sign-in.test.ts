@@ -9,7 +9,7 @@ vi.mock("@/lib/server-db", async () => (await import("./helpers/auth")).serverDb
 vi.mock("@/lib/origin", () => ({ requestOrigin: async () => "https://hoops.example" }));
 
 const { GET: callback } = await import("@/app/auth/callback/route");
-const { sendMagicLink } = await import("@/app/sign-in/actions");
+const { appGoogleSignInUrl, sendMagicLink } = await import("@/app/sign-in/actions");
 const { default: SignInPage } = await import("@/app/sign-in/page");
 
 const visit = (query: string) => callback(new Request(`https://hoops.example/auth/callback?${query}`));
@@ -75,6 +75,32 @@ describe("magic link sign-in", () => {
   it("never redirects off-site after signing in", async () => {
     expect(location(await visit("code=xyz&next=%2F%2Fevil.example"))).toBe("/squad");
     expect(location(await visit("code=xyz&next=https%3A%2F%2Fevil.example"))).toBe("/squad");
+  });
+});
+
+describe("Google sign-in in the app", () => {
+  it("returns the Google address for the browser sheet, coming back on the app's scheme", async () => {
+    expect(await appGoogleSignInUrl("/leagues/join?code=ABC234")).toBe("https://accounts.google.com/o/oauth2");
+    expect(auth.client.auth.signInWithOAuth).toHaveBeenCalledWith({
+      provider: "google",
+      options: {
+        redirectTo: "ie.hoopsfantasy.app://auth/callback?next=%2Fleagues%2Fjoin%3Fcode%3DABC234",
+        skipBrowserRedirect: true,
+      },
+    });
+  });
+
+  it("only returns to pages on this site", async () => {
+    await appGoogleSignInUrl("https://evil.example");
+    expect(auth.client.auth.signInWithOAuth.mock.calls[0][0].options.redirectTo).toBe(
+      "ie.hoopsfantasy.app://auth/callback?next=%2Fsquad",
+    );
+  });
+
+  it("finishes in the app's web view like any Google sign-in", async () => {
+    const res = await visit("code=abc&next=%2Fleagues");
+    expect(auth.client.auth.exchangeCodeForSession).toHaveBeenCalledWith("abc");
+    expect(location(res)).toBe("/leagues");
   });
 });
 
