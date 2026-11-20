@@ -13,6 +13,7 @@ Each folder in `openspec/changes/` is one change with a proposal, specs, design 
 5. `add-mini-leagues` – overall leaderboard and invite-code leagues
 6. `add-mobile-app` – installable web app, iOS and Android apps, push notifications for deadlines and results
 7. `prepare-for-beta` – rename to Irish Basketball Fantasy, 6-player positional squads, menu on every page, How to play page, the design-canvas look
+8. `add-super-league-competitions` – real Men's and Women's Super League, one squad per competition, admin data entry until a feed exists
 
 Later changes, not yet specced: live in-game scoring, form-based price changes, transfers and autosubs, Division 1 and National League D2.
 
