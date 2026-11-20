@@ -8,7 +8,7 @@ import { getDb } from "@/lib/server-db";
 import { leaveLeagueAction, regenerateCodeAction, removeMemberAction } from "../actions";
 import { JoinLeagueForm, ShareInvite } from "../league-forms";
 
-export const metadata: Metadata = { title: "League · Hoops Fantasy" };
+export const metadata: Metadata = { title: "League" };
 
 export const instant = false;
 
@@ -40,7 +40,7 @@ export default async function LeaguePage({ params, searchParams }: PageProps<"/l
   return (
     <main>
       <p className="muted">
-        <Link href="/leagues">Your leagues</Link> · <Link href="/leaderboard">Leaderboard</Link>
+        <Link href="/leagues">Your leagues</Link>
       </p>
       <h1>{league.name}</h1>
       {created && (

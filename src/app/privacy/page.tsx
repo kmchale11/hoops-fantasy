@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = { title: "Privacy · Hoops Fantasy" };
+export const metadata: Metadata = { title: "Privacy" };
 
 // DRAFT: describes what the code stores today, for the store privacy forms and sign-up. Have
 // it reviewed, and fill in the controller's name and contact address, before launch.
 export default function PrivacyPage() {
   return (
     <main>
-      <p className="muted">
-        <Link href="/">Hoops Fantasy</Link>
-      </p>
       <h1>Privacy</h1>
       <p className="muted">Draft. A reviewed privacy notice will be published before launch.</p>
 

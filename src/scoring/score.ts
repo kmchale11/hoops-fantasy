@@ -34,3 +34,18 @@ export function scoreStatLine(stats: ScoringStatLine, weights: ScoringWeights = 
   // Avoid returning -0, which would display as "-0.0".
   return rounded === 0 ? 0 : rounded;
 }
+
+/** What each category is called, one of it: "Rebound". */
+export const SCORING_LABELS: Record<ScoringCategory, string> = {
+  pts: "Point",
+  reb: "Rebound",
+  ast: "Assist",
+  stl: "Steal",
+  blk: "Block",
+  tov: "Turnover",
+};
+
+/** A weight with its sign and a real minus sign: +1.2, −1. */
+export function signedWeight(n: number): string {
+  return n < 0 ? `−${Math.abs(n)}` : `+${n}`;
+}

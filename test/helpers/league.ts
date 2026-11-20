@@ -4,9 +4,12 @@ import { createAuthUser } from "./db";
 
 export const TEAMS = ["Ballina Braves", "Killester", "Moycullen", "Tralee Titans"] as const;
 
+/** Each team's four players, in ID order: a guard, a forward, a centre and another guard. */
+export const TEAM_POSITIONS = ["G", "F", "C", "G"] as const;
+
 /**
- * A small league: 4 teams with 4 players each (IDs 1–16, team by team), every player priced
- * 12.5, so any 8 of them cost exactly 100.0.
+ * A small league: 4 teams with 4 players each (IDs 1–16, team by team, positions as
+ * TEAM_POSITIONS), every player priced 10.0, so any 6 of them cost exactly 60.0.
  */
 export async function seedLeague(db: Db): Promise<void> {
   await db.query(`insert into competitions (external_id, name, season) values ('sl', 'Super League', '2026-27')`);
@@ -17,18 +20,20 @@ export async function seedLeague(db: Db): Promise<void> {
       name.slice(0, 3).toUpperCase(),
     ]);
     for (let j = 1; j <= 4; j++) {
-      await db.query(`insert into players (external_id, full_name, current_team_id) values ($1, $2, $3)`, [
-        `p${i * 4 + j}`,
-        `${name.split(" ")[0]} Player ${j}`,
-        i + 1,
-      ]);
+      await db.query(
+        `insert into players (external_id, full_name, current_team_id, position) values ($1, $2, $3, $4)`,
+        [`p${i * 4 + j}`, `${name.split(" ")[0]} Player ${j}`, i + 1, TEAM_POSITIONS[j - 1]],
+      );
     }
   }
-  await db.query(`insert into player_prices (player_id, price) select id, 12.5 from players`);
+  await db.query(`insert into player_prices (player_id, price) select id, 10.0 from players`);
 }
 
-/** Two players from each team: a valid squad. */
-export const VALID_SQUAD = [1, 2, 5, 6, 9, 10, 13, 14];
+/**
+ * A valid squad: guard and forward from Ballina (1, 2) and Killester (5, 6), Moycullen's centre
+ * (11) and a third guard from Tralee (13) in the flex slot.
+ */
+export const VALID_SQUAD = [1, 2, 5, 6, 11, 13];
 
 export async function addRound(db: Db, number: number, startsAt: Date, endsAt: Date): Promise<number> {
   const [row] = await db.query<{ id: number }>(

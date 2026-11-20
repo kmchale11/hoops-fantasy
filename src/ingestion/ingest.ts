@@ -11,6 +11,7 @@ import type {
   StatValues,
 } from "./feed/types";
 import { STAT_KEYS } from "./feed/types";
+import { feedPosition } from "./positions";
 import { FeedDataError, statLineProblems } from "./validate";
 
 export interface IngestionCounts {
@@ -193,7 +194,7 @@ async function upsertPlayer(
       const [created] = await tx.query<{ id: number }>(
         `insert into players (external_id, full_name, position, current_team_id, updated_at)
          values ($1, $2, $3, $4, $5) returning id`,
-        [player.externalId, player.fullName, player.position, teamId, now],
+        [player.externalId, player.fullName, feedPosition(player.position), teamId, now],
       );
       await tx.query(
         `insert into player_team_history (player_id, team_id, started_on) values ($1, $2, $3)`,
@@ -205,12 +206,12 @@ async function upsertPlayer(
   }
 
   await db.transaction(async (tx) => {
-    // Keep an admin-set position if the feed doesn't send one.
+    // Keep an admin-set position if the feed doesn't send one we recognise.
     await tx.query(
       `update players
          set full_name = $2, position = coalesce($3, position), current_team_id = $4, updated_at = $5
        where id = $1`,
-      [existing.id, player.fullName, player.position, teamId, now],
+      [existing.id, player.fullName, feedPosition(player.position), teamId, now],
     );
     if (existing.current_team_id !== teamId) {
       await tx.query(

@@ -1,20 +1,31 @@
 import Link from "next/link";
+import { APP_NAME, INDEPENDENCE_NOTICE } from "@/lib/app-identity";
+import { BUDGET, SQUAD_SIZE } from "@/squads/rules";
+import styles from "./home.module.css";
 
 export default function Home() {
   return (
-    <main>
-      <h1>Hoops Fantasy</h1>
-      <p className="muted">Free-to-play fantasy basketball for Irish domestic leagues.</p>
-      <p>
-        Pick a squad of eight before each round, then compete with everyone and in private leagues
-        with your club, workplace or friends.
+    <main className={styles.home}>
+      <p className="eyebrow">Free to play · Super League</p>
+      <h1>{APP_NAME}</h1>
+      <p className={styles.lead}>
+        Pick {SQUAD_SIZE} players for {BUDGET} credits before each round, captain one to double their points, then
+        compete with everyone and in private leagues with your club, workplace or friends.
       </p>
-      <p>
-        <Link href="/sign-in">Sign in</Link> · <Link href="/squad">Your squad</Link> · <Link href="/results">Results</Link> ·{" "}
-        <Link href="/leagues">Leagues</Link> · <Link href="/leaderboard">Leaderboard</Link> ·{" "}
-        <Link href="/account">Your account</Link> ·{" "}
-        <Link href="/scoring">How scoring works</Link>
-      </p>
+      <div className={styles.actions}>
+        <Link href="/squad" className={styles.primary}>
+          Pick your squad
+        </Link>
+        <Link href="/how-to-play" className={styles.secondary}>
+          How to play
+        </Link>
+      </div>
+      <footer className={styles.footer}>
+        <p>{INDEPENDENCE_NOTICE}</p>
+        <p>
+          Free to play · no prizes · 18+ · <Link href="/privacy">Privacy</Link> · <Link href="/terms">Terms</Link>
+        </p>
+      </footer>
     </main>
   );
 }

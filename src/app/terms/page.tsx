@@ -1,20 +1,18 @@
 import type { Metadata } from "next";
+import { APP_NAME } from "@/lib/app-identity";
 import Link from "next/link";
 
-export const metadata: Metadata = { title: "Terms · Hoops Fantasy" };
+export const metadata: Metadata = { title: "Terms" };
 
 // DRAFT: placeholder wording so the sign-up checkbox links somewhere real. Replace with
 // reviewed terms and a privacy notice before launch.
 export default function TermsPage() {
   return (
     <main>
-      <p className="muted">
-        <Link href="/">Hoops Fantasy</Link>
-      </p>
       <h1>Terms</h1>
       <p className="muted">Draft. Full terms will be published before launch.</p>
       <ul>
-        <li>Hoops Fantasy is free to play. There is no entry fee and there are no cash prizes.</li>
+        <li>{APP_NAME} is free to play. There is no entry fee and there are no cash prizes.</li>
         <li>You must be 18 or over to play.</li>
         <li>
           We keep your email address, manager name, team name, when you agreed to these terms and

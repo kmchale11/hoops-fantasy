@@ -1,0 +1,121 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.page h1 {
+  margin: 0;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--raised);
+}
+
+.avatar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  background: var(--accent-surface);
+  color: var(--accent-text);
+  font-family: var(--heading);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.team {
+  display: block;
+  font-weight: 600;
+}
+
+.group {
+  margin: 0 4px 6px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list li:empty {
+  display: none;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--foreground);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.row:hover {
+  color: var(--foreground);
+  background: var(--raised);
+}
+
+.hint {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.badge {
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  vertical-align: 2px;
+  color: var(--accent-contrast);
+  background: var(--muted);
+}
+
+.signOut button {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.footer {
+  margin: 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+}

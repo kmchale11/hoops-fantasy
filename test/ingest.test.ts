@@ -154,15 +154,29 @@ describe("runIngestion", () => {
     expect(player.team).toBe("Westport Waves");
   });
 
-  it("keeps an admin-set position when the feed sends none", async () => {
+  it("maps feed positions to Guard, Forward or Centre, keeping an admin-set one otherwise", async () => {
     const { db } = await createTestDb();
-    await runIngestion(db, new MockFeedAdapter(1), { now: AFTER_ROUND_2 });
-    const [blank] = await db.query<{ id: number }>(`select id from players where position is null limit 1`);
-    await db.query(`update players set position = 'C' where id = $1`, [blank.id]);
+    // The mock season, with the first three players' positions as a real feed might send them.
+    const feedPositions = new Map([["mock-p-bal-00", "PG"], ["mock-p-bal-01", "Center"], ["mock-p-bal-02", "G/F"]]);
+    const mock = new MockFeedAdapter(1);
+    const feed: FeedAdapter = Object.assign(Object.create(mock), {
+      listPlayers: async (team: string) =>
+        (await mock.listPlayers(team)).map((p) => ({ ...p, position: feedPositions.get(p.externalId) ?? p.position })),
+    });
+    const positions = async () =>
+      (
+        await db.query<{ position: string | null }>(
+          `select position from players where external_id in ('mock-p-bal-00', 'mock-p-bal-01', 'mock-p-bal-02')
+            order by external_id`,
+        )
+      ).map((p) => p.position);
 
-    await runIngestion(db, new MockFeedAdapter(1), { now: AFTER_ROUND_2 });
-    const [after] = await db.query<{ position: string }>(`select position from players where id = $1`, [blank.id]);
-    expect(after.position).toBe("C");
+    await runIngestion(db, feed, { now: AFTER_ROUND_2 });
+    expect(await positions()).toEqual(["G", "C", null]);
+
+    await db.query(`update players set position = 'F' where external_id = 'mock-p-bal-02'`);
+    await runIngestion(db, feed, { now: AFTER_ROUND_2 });
+    expect(await positions()).toEqual(["G", "C", "F"]);
   });
 
   it("logs a failed run and leaves each fixture fully written or untouched", async () => {

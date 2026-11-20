@@ -3,7 +3,7 @@ import { requireAdminPage } from "@/lib/guards";
 import ImportForm from "./import-form";
 
 export const metadata: Metadata = {
-  title: "Import box score · Hoops Fantasy",
+  title: "Import box score",
   robots: { index: false },
 };
 

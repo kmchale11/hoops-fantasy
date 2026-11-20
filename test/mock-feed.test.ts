@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { MockFeedAdapter } from "@/ingestion/feed/mock/adapter";
 import {
   CORRECTED_FIXTURE_ID,
+  MOCK_COMPETITION,
   POSTPONED_FIXTURE_ID,
   RESCHEDULED_TIP_OFF,
   TRANSFERRED_PLAYER_ID,
@@ -26,6 +27,18 @@ describe("MockFeedAdapter", () => {
     expect(players).toHaveLength(120);
     expect(new Set(players.map((p) => p.externalId)).size).toBe(120);
     expect(fixtures).toHaveLength(20); // 4 rounds × 5 games
+  });
+
+  it("gives every player a position, with at least 2 centres per team", async () => {
+    const mock = new MockFeedAdapter(1);
+    for (const team of await mock.listTeams(MOCK_COMPETITION.externalId)) {
+      const positions = (await mock.listPlayers(team.externalId)).map((p) => p.position);
+      expect(positions.every((p) => p === "G" || p === "F" || p === "C"), team.name).toBe(true);
+      expect(positions.filter((p) => p === "C").length, team.name).toBeGreaterThanOrEqual(2);
+      // Enough for the guard and forward slots too, after the 2-per-club limit.
+      expect(positions.filter((p) => p === "G").length, team.name).toBeGreaterThanOrEqual(2);
+      expect(positions.filter((p) => p === "F").length, team.name).toBeGreaterThanOrEqual(2);
+    }
   });
 
   it("schedules every team exactly once per round", async () => {

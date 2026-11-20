@@ -1,13 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { squadRuleErrors, type SquadCandidate } from "@/squads/rules";
+import { squadRuleErrors, type Position, type SquadCandidate } from "@/squads/rules";
 import { createTestDb } from "./helpers/db";
 
-function player(id: number, price: number | null, team = `Team ${id}`): SquadCandidate {
-  return { id, name: `Player ${id}`, teamId: id, teamName: team, price };
+function player(id: number, position: Position | null, price: number | null = 10, team = `Team ${id}`): SquadCandidate {
+  return { id, name: `Player ${id}`, teamId: id, teamName: team, price, position };
 }
 
-/** 8 players from 8 teams costing 12.5 each: exactly 100.0. */
-const valid = () => Array.from({ length: 8 }, (_, i) => player(i + 1, 12.5));
+/** 6 players from 6 teams costing 10.0 each (exactly 60.0), with the given positions. */
+const squadOf = (...positions: (Position | null)[]) => positions.map((pos, i) => player(i + 1, pos));
+/** 2 guards, 2 forwards, a centre and a third guard in the flex slot. */
+const valid = () => squadOf("G", "G", "F", "F", "C", "G");
 
 describe("squad rules", () => {
   it("accepts a valid squad", () => {
@@ -16,17 +18,22 @@ describe("squad rules", () => {
 
   it("rejects an over-budget squad, showing the amount over", () => {
     const squad = valid();
-    squad[0].price = 14.0;
+    squad[0].price = 11.5;
     expect(squadRuleErrors(squad, 1)).toEqual(["Over budget by 1.5 credits"]);
   });
 
-  it("rejects 7 players", () => {
-    expect(squadRuleErrors(valid().slice(0, 7), 1)).toEqual(["Pick 8 players (you have 7)"]);
+  it("rejects 5 players, and the old size of 8", () => {
+    expect(squadRuleErrors(valid().slice(0, 5), 1)).toEqual(["Pick 6 players (you have 5)"]);
+    const eight = [...valid(), player(7, "G", 0), player(8, "F", 0)];
+    expect(squadRuleErrors(eight, 1)).toEqual(["Pick 6 players (you have 8)"]);
   });
 
-  it("rejects 4 players from one team, naming it", () => {
-    const squad = valid().map((p, i) => (i < 4 ? { ...p, teamId: 100, teamName: "Ballina Braves" } : p));
-    expect(squadRuleErrors(squad, 1)).toEqual(["Too many players from Ballina Braves (3 max)"]);
+  it("rejects 3 or 4 players from one club, naming it, and allows 2", () => {
+    const fromBallina = (n: number) =>
+      valid().map((p, i) => (i < n ? { ...p, teamId: 100, teamName: "Ballina Braves" } : p));
+    expect(squadRuleErrors(fromBallina(4), 1)).toEqual(["Too many players from Ballina Braves (2 max)"]);
+    expect(squadRuleErrors(fromBallina(3), 1)).toEqual(["Too many players from Ballina Braves (2 max)"]);
+    expect(squadRuleErrors(fromBallina(2), 1)).toEqual([]);
   });
 
   it("requires a captain from the squad", () => {
@@ -38,6 +45,48 @@ describe("squad rules", () => {
     const squad = valid();
     squad[2].price = null;
     expect(squadRuleErrors(squad, 1)).toEqual(["Player 3 isn't available to pick yet"]);
+  });
+});
+
+describe("positions", () => {
+  it("accepts 3 guards, 2 forwards and a centre, the third guard in the flex slot", () => {
+    expect(squadRuleErrors(squadOf("G", "G", "G", "F", "F", "C"), 1)).toEqual([]);
+  });
+
+  it("needs a centre", () => {
+    expect(squadRuleErrors(squadOf("G", "G", "G", "F", "F", "F"), 1)).toEqual(["Pick a centre"]);
+  });
+
+  it("needs 2 guards", () => {
+    expect(squadRuleErrors(squadOf("G", "F", "F", "F", "C", "C"), 1)).toEqual(["Pick 2 guards (you have 1)"]);
+  });
+
+  it("needs 2 forwards", () => {
+    expect(squadRuleErrors(squadOf("G", "G", "G", "F", "C", "C"), 1)).toEqual(["Pick 2 forwards (you have 1)"]);
+  });
+
+  it("lets one player without a position fill the flex slot", () => {
+    expect(squadRuleErrors(squadOf("G", "G", "F", "F", "C", null), 1)).toEqual([]);
+  });
+
+  it("rejects a second player without a position", () => {
+    expect(squadRuleErrors(squadOf("G", "G", "F", "F", null, null), 1)).toEqual([
+      "Pick a centre",
+      "Only one player without a position can be picked (in the flex spot)",
+    ]);
+  });
+
+  it("lists every rule broken, in order", () => {
+    const squad = squadOf("C", "C", "C", null, null).map((p) => ({ ...p, price: 13, teamId: 1, teamName: "Ballina" }));
+    expect(squadRuleErrors(squad, null)).toEqual([
+      "Pick 6 players (you have 5)",
+      "Over budget by 5.0 credits",
+      "Too many players from Ballina (2 max)",
+      "Pick a captain from your squad",
+      "Pick 2 guards (you have 0)",
+      "Pick 2 forwards (you have 0)",
+      "Only one player without a position can be picked (in the flex spot)",
+    ]);
   });
 });
 

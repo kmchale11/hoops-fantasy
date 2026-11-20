@@ -37,8 +37,8 @@ const LINK = `${window.location.origin}/join/ABC234`;
 describe("ShareInvite", () => {
   it("builds the message from the league name and the full invite link", () => {
     expect(inviteMessage("Thursday Ballers", "/join/ABC234", "https://hoopsfantasy.ie/leagues/7")).toEqual({
-      title: "Join Thursday Ballers on Hoops Fantasy",
-      text: 'Join my league "Thursday Ballers" on Hoops Fantasy',
+      title: "Join Thursday Ballers on Irish Basketball Fantasy",
+      text: 'Join my league "Thursday Ballers" on Irish Basketball Fantasy',
       url: "https://hoopsfantasy.ie/join/ABC234",
     });
   });
@@ -50,8 +50,8 @@ describe("ShareInvite", () => {
 
     await click("Share invite");
     expect(share).toHaveBeenCalledWith({
-      title: "Join Thursday Ballers on Hoops Fantasy",
-      text: 'Join my league "Thursday Ballers" on Hoops Fantasy',
+      title: "Join Thursday Ballers on Irish Basketball Fantasy",
+      text: 'Join my league "Thursday Ballers" on Irish Basketball Fantasy',
       url: LINK,
     });
     expect(writeText).not.toHaveBeenCalled();
@@ -65,8 +65,8 @@ describe("ShareInvite", () => {
       render();
       await click("Share invite");
       expect(share).toHaveBeenCalledWith({
-        title: "Join Thursday Ballers on Hoops Fantasy",
-        text: 'Join my league "Thursday Ballers" on Hoops Fantasy',
+        title: "Join Thursday Ballers on Irish Basketball Fantasy",
+        text: 'Join my league "Thursday Ballers" on Irish Basketball Fantasy',
         url: LINK,
         dialogTitle: "Share invite",
       });

@@ -3,7 +3,13 @@
  * domain and store name are confirmed; mobile/capacitor.config.ts reads the same values.
  */
 export const APP_ID = "ie.hoopsfantasy.app";
-export const APP_NAME = "Hoops Fantasy";
+export const APP_NAME = "Irish Basketball Fantasy";
+/** Under the home-screen icon, where iOS cuts off at about 12 characters. A placeholder. */
+export const APP_SHORT_NAME = "IB Fantasy";
+/** Shown on the home page and How to play. The game uses no Basketball Ireland branding. */
+export const INDEPENDENCE_NOTICE = "Not affiliated with or endorsed by Basketball Ireland.";
+/** The background colour, also used for the browser bar, splash and installed-app chrome. */
+export const THEME_COLOR = "#10141C";
 /** The live website the native app loads. A placeholder until the domain is confirmed. */
 export const PRODUCTION_URL = "https://hoopsfantasy.ie";
 /** Google sign-in returns to the app through this scheme (see design.md). */

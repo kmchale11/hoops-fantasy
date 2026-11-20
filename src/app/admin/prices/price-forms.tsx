@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import styles from "@/app/forms.module.css";
+import { POSITION_NAMES, type Position } from "@/squads/rules";
 import { importPrices, savePrices, type PriceEditState, type PriceImportState } from "./actions";
 import local from "./prices.module.css";
 
@@ -10,6 +11,7 @@ export interface PriceRow {
   name: string;
   team: string | null;
   price: number | null;
+  position: Position | null;
 }
 
 export function PriceEditor({ players }: { players: PriceRow[] }) {
@@ -23,6 +25,7 @@ export function PriceEditor({ players }: { players: PriceRow[] }) {
           <tr>
             <th scope="col">Player</th>
             <th scope="col">Team</th>
+            <th scope="col">Position</th>
             <th scope="col">Price</th>
           </tr>
         </thead>
@@ -33,6 +36,22 @@ export function PriceEditor({ players }: { players: PriceRow[] }) {
                 <label htmlFor={`price-${p.id}`}>{p.name}</label>
               </th>
               <td>{p.team ?? "No team"}</td>
+              <td>
+                <select
+                  name={`position-${p.id}`}
+                  aria-label={`${p.name}'s position`}
+                  className={styles.input}
+                  defaultValue={p.position ?? ""}
+                >
+                  <option value="">Not set</option>
+                  {Object.entries(POSITION_NAMES).map(([code, name]) => (
+                    <option key={code} value={code}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+                {p.position === null && <p className={local.flag}>Needs a position</p>}
+              </td>
               <td>
                 <input
                   id={`price-${p.id}`}
@@ -49,12 +68,15 @@ export function PriceEditor({ players }: { players: PriceRow[] }) {
           ))}
         </tbody>
       </table>
-      <p className={styles.hint}>4.0–15.0 in steps of 0.5. Leave blank to make a player unavailable.</p>
+      <p className={styles.hint}>
+        Prices 4.0–15.0 in steps of 0.5; leave blank to make a player unavailable. A player with no position
+        can only be picked for the flex slot.
+      </p>
       <button className={styles.button} type="submit" disabled={pending}>
-        {pending ? "Saving…" : "Save prices"}
+        {pending ? "Saving…" : "Save prices and positions"}
       </button>
       {state.message && <p className={styles.error}>{state.message}</p>}
-      {state.saved !== null && <p className={styles.success}>Prices saved.</p>}
+      {state.saved !== null && <p className={styles.success}>Saved.</p>}
     </form>
   );
 }

@@ -5,7 +5,7 @@ import { safeNext } from "@/lib/guards";
 import { getAccount } from "@/lib/session";
 import SignInForm from "./sign-in-form";
 
-export const metadata: Metadata = { title: "Sign in · Hoops Fantasy" };
+export const metadata: Metadata = { title: "Sign in" };
 
 // Reads the session to send signed-in visitors on, so it renders per request.
 export const instant = false;

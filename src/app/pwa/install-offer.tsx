@@ -3,22 +3,27 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import styles from "./pwa.module.css";
 
+import { APP_NAME } from "@/lib/app-identity";
+import { nativeShell } from "@/lib/native/shell";
+
 export const DISMISS_KEY = "hf-install-dismissed-at";
 export const DISMISS_DAYS = 30;
 
 /** Chrome's install event, which TypeScript's DOM types don't include. */
-interface InstallPromptEvent extends Event {
+export interface InstallPromptEvent extends Event {
   prompt(): Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
 /** For browser-only values that don't change while the page is open. */
-const noSubscription = () => () => {};
+export const noSubscription = () => () => {};
 
-function isStandalone(): boolean {
+/** True in the installed web app, and in the iOS and Android apps. */
+export function isStandalone(): boolean {
   return (
     window.matchMedia("(display-mode: standalone)").matches ||
-    (navigator as Navigator & { standalone?: boolean }).standalone === true
+    (navigator as Navigator & { standalone?: boolean }).standalone === true ||
+    nativeShell() !== null
   );
 }
 
@@ -32,7 +37,7 @@ function dismissedRecently(now: number): boolean {
 }
 
 /** iPhone and iPad Safari, which has no install prompt: people add the site from the Share menu. */
-function isIosSafari(): boolean {
+export function isIosSafari(): boolean {
   const ua = navigator.userAgent;
   const ios = /iPhone|iPad|iPod/.test(ua) || (ua.includes("Macintosh") && navigator.maxTouchPoints > 1);
   return ios && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
@@ -83,7 +88,7 @@ export default function InstallOffer() {
     <aside className={styles.install} aria-label="Install the app">
       {promptEvent ? (
         <>
-          <p>Add Hoops Fantasy to your home screen to check your squad in one tap.</p>
+          <p>Add {APP_NAME} to your home screen to check your squad in one tap.</p>
           <button
             type="button"
             className={styles.primary}
@@ -99,7 +104,7 @@ export default function InstallOffer() {
         </>
       ) : (
         <p>
-          Add Hoops Fantasy to your home screen: tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.
+          Add {APP_NAME} to your home screen: tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.
         </p>
       )}
       <button type="button" className={styles.dismiss} onClick={dismiss}>

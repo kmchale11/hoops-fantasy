@@ -22,6 +22,24 @@ export async function createTestDb(): Promise<{ db: Db; pg: PGlite }> {
   return { db: pgliteDb(pg), pg };
 }
 
+/**
+ * A database with the migrations before `file` applied, for testing what `file` does to
+ * existing data. Call applyRest() to run `file` and everything after it.
+ */
+export async function createTestDbBefore(file: string): Promise<{ db: Db; applyRest: () => Promise<void> }> {
+  const pg = new PGlite();
+  await pg.exec(readFileSync(SUPABASE_SHIM, "utf8"));
+  const files = migrationFiles();
+  if (!files.includes(file)) throw new Error(`No migration ${file}`);
+  for (const f of files.filter((f) => f < file)) await pg.exec(readFileSync(join(MIGRATIONS_DIR, f), "utf8"));
+  return {
+    db: pgliteDb(pg),
+    applyRest: async () => {
+      for (const f of files.filter((f) => f >= file)) await pg.exec(readFileSync(join(MIGRATIONS_DIR, f), "utf8"));
+    },
+  };
+}
+
 function pgliteDb(pg: PGlite): Db {
   const db: Db = {
     async query<T>(sql: string, params: unknown[] = []) {

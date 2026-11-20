@@ -1,6 +1,7 @@
 import type { CsvRowError } from "@/ingestion/csv-import";
 import { parseCsv } from "@/ingestion/csv-import";
 import type { Db } from "@/lib/db";
+import { POSITION_NAMES, type Position } from "./rules";
 
 export const MIN_PRICE = 4;
 export const MAX_PRICE = 15;
@@ -16,15 +17,41 @@ export function parsePrice(text: string): { price: number | null } | { error: st
   return { price };
 }
 
+export const POSITION_RULE = "Choose Guard, Forward or Centre";
+
+/** Parses a position field: "G", "F" or "C", or blank for not set (null). */
+export function parsePosition(text: string): { position: Position | null } | { error: string } {
+  const trimmed = text.trim().toUpperCase();
+  if (trimmed === "") return { position: null };
+  return trimmed in POSITION_NAMES ? { position: trimmed as Position } : { error: POSITION_RULE };
+}
+
+export interface PositionChange {
+  playerId: number;
+  /** Null clears it: the player can then only be picked for the flex slot. */
+  position: Position | null;
+}
+
 export interface PriceChange {
   playerId: number;
   /** Null clears the price, making the player unavailable. */
   price: number | null;
 }
 
-/** Applies every change in one transaction. */
-export async function setPrices(db: Db, changes: PriceChange[], now: Date): Promise<void> {
+/** Applies every price and position change in one transaction. */
+export async function setPrices(
+  db: Db,
+  changes: PriceChange[],
+  now: Date,
+  positions: PositionChange[] = [],
+): Promise<void> {
   await db.transaction(async (tx) => {
+    for (const { playerId, position } of positions) {
+      await tx.query(
+        `update players set position = $2, updated_at = $3 where id = $1 and position is distinct from $2`,
+        [playerId, position, now],
+      );
+    }
     for (const { playerId, price } of changes) {
       if (price === null) {
         await tx.query(`delete from player_prices where player_id = $1`, [playerId]);

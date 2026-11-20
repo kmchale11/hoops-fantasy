@@ -1,9 +1,10 @@
-// Hoops Fantasy service worker. Deliberately small:
+// Irish Basketball Fantasy service worker. Deliberately small:
 //  - Game pages and API calls always go to the network, never a cache, so nothing stale shows.
 //  - A page that can't load because there's no connection gets the cached offline screen.
 //  - Push notifications and taps on them (see the push and notificationclick handlers).
 
-const CACHE = "hoops-offline-v1";
+// Bump when the offline page changes, so installed copies fetch the new one.
+const CACHE = "offline-v2";
 const OFFLINE_URL = "/offline";
 
 self.addEventListener("install", (event) => {

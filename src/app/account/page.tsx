@@ -5,7 +5,7 @@ import { requireUser } from "@/lib/guards";
 import { signOut } from "../sign-in/actions";
 import DeleteForm from "./delete-form";
 
-export const metadata: Metadata = { title: "Your account · Hoops Fantasy", robots: { index: false } };
+export const metadata: Metadata = { title: "Your account", robots: { index: false } };
 
 export const instant = false;
 
@@ -22,9 +22,6 @@ export default async function AccountPage() {
 
   return (
     <main>
-      <p className="muted">
-        <Link href="/">Hoops Fantasy</Link>
-      </p>
       <h1>Your account</h1>
       <p className="muted">This is all the personal information we hold about you.</p>
 

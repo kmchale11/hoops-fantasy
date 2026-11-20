@@ -1,0 +1,109 @@
+.nav {
+  background: var(--nav);
+  z-index: 10;
+}
+
+.brand {
+  display: none;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--foreground);
+}
+
+.link[aria-current="page"] {
+  color: var(--accent-text);
+}
+
+/* Phones: a bottom tab bar, clear of the iPhone home bar. */
+@media (max-width: 767px) {
+  .nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: calc(var(--tab-bar) + env(safe-area-inset-bottom));
+    padding: 6px 4px env(safe-area-inset-bottom);
+    border-top: 1px solid var(--nav-border);
+  }
+
+  .list {
+    display: grid;
+    grid-template-columns: repeat(var(--tabs, 5), minmax(0, 1fr));
+  }
+
+  .wideOnly {
+    display: none;
+  }
+
+  .link {
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    min-height: 52px;
+    font-size: 11px;
+    text-align: center;
+  }
+
+  /* Admin pages live under More on phones. */
+  .nav[data-current="admin"] .more {
+    color: var(--accent-text);
+  }
+}
+
+/* Wider screens: the same links across the top. */
+@media (min-width: 768px) {
+  .nav {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    min-height: 64px;
+    padding: 0 max(24px, calc((100vw - 1040px) / 2));
+    border-bottom: 1px solid var(--nav-border);
+  }
+
+  .brand {
+    display: block;
+    font-family: var(--heading);
+    font-size: 1.4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--foreground);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .list {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .link {
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+  }
+
+  .link[aria-current="page"] {
+    background: var(--accent-surface);
+  }
+}

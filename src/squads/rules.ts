@@ -3,9 +3,21 @@
  * save_squad() re-checks the same rules and returns the same messages in the same order.
  */
 
-export const SQUAD_SIZE = 8;
-export const BUDGET = 100;
-export const MAX_PER_TEAM = 3;
+export const SQUAD_SIZE = 6;
+export const BUDGET = 60;
+export const MAX_PER_TEAM = 2;
+
+/** The captain's points are multiplied by this (user_round_scores in the squads migration). */
+export const CAPTAIN_MULTIPLIER = 2;
+
+export type Position = "G" | "F" | "C";
+export const POSITION_NAMES: Record<Position, string> = { G: "Guard", F: "Forward", C: "Centre" };
+
+/**
+ * The squad's slots: 2 guards, 2 forwards, a centre and a flex player of any position or none.
+ * With SQUAD_SIZE players, meeting the G, F and C minimums leaves exactly FLEX spare.
+ */
+export const SLOTS = { G: 2, F: 2, C: 1, FLEX: 1 } as const;
 
 export interface SquadCandidate {
   id: number;
@@ -15,6 +27,8 @@ export interface SquadCandidate {
   teamName: string | null;
   /** Null when no price has been set yet. */
   price: number | null;
+  /** Null when nobody has set it; such a player can only fill the flex slot. */
+  position: Position | null;
 }
 
 /** A player can be picked once they have a current team and a price. */
@@ -50,5 +64,11 @@ export function squadRuleErrors(players: SquadCandidate[], captainId: number | n
   }
 
   if (captainId === null || !unique.some((p) => p.id === captainId)) errors.push("Pick a captain from your squad");
+
+  const count = (position: Position | null) => unique.filter((p) => p.position === position).length;
+  if (count("G") < SLOTS.G) errors.push(`Pick ${SLOTS.G} guards (you have ${count("G")})`);
+  if (count("F") < SLOTS.F) errors.push(`Pick ${SLOTS.F} forwards (you have ${count("F")})`);
+  if (count("C") < SLOTS.C) errors.push("Pick a centre");
+  if (count(null) > SLOTS.FLEX) errors.push("Only one player without a position can be picked (in the flex spot)");
   return errors;
 }

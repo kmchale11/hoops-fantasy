@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Hoops Fantasy</string>
-    <string name="title_activity_main">Hoops Fantasy</string>
+    <string name="app_name">Irish Basketball Fantasy</string>
+    <!-- The label under the launcher icon, short enough not to be cut off (APP_SHORT_NAME). -->
+    <string name="title_activity_main">IB Fantasy</string>
     <string name="package_name">ie.hoopsfantasy.app</string>
     <string name="custom_url_scheme">ie.hoopsfantasy.app</string>
 </resources>

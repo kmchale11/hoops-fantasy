@@ -15,9 +15,16 @@ const { GET: start } = await import("@/app/start/route");
 const { GET: offline } = await import("@/app/offline/route");
 
 describe("web app manifest", () => {
-  it("makes the site installable as Hoops Fantasy", () => {
+  it("makes the site installable as Irish Basketball Fantasy", () => {
     const m = manifest();
-    expect(m).toMatchObject({ name: "Hoops Fantasy", display: "standalone", start_url: "/start", scope: "/" });
+    expect(m).toMatchObject({
+      name: "Irish Basketball Fantasy",
+      short_name: "IB Fantasy",
+      display: "standalone",
+      start_url: "/start",
+      scope: "/",
+      theme_color: "#10141C",
+    });
     expect(m.icons!.map((i) => [i.sizes, i.purpose])).toEqual([
       ["192x192", "any"],
       ["512x512", "any"],
@@ -50,7 +57,7 @@ describe("offline screen", () => {
 
   it("has a native app copy that restarts the app on the website when retried", () => {
     const html = appOfflineHtml("https://hoops.test");
-    expect(html).toContain("Can't reach Hoops Fantasy");
+    expect(html).toContain("Can't reach Irish Basketball Fantasy");
     expect(html).toContain(`onclick="location.replace(&quot;https://hoops.test/start&quot;)"`);
     expect(html).not.toMatch(/<(link|script)[^>]+(href|src)=/);
     expect(readFileSync("mobile/capacitor.config.ts", "utf8")).toContain('errorPath: "offline.html"');

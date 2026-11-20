@@ -53,7 +53,7 @@ describe("saving a squad", () => {
     await roundsAroundNow(at(2 * HOUR));
     expect(await saveSquad(db, niamh, VALID_SQUAD, 1)).toMatchObject({ ok: true });
 
-    const swapped = [...VALID_SQUAD.slice(0, 7), 15];
+    const swapped = [...VALID_SQUAD.slice(0, 5), 15]; // Tralee's centre for their guard
     expect(await saveSquad(db, niamh, swapped, 15)).toMatchObject({ ok: true });
     expect(await getLatestSquad(db, niamh)).toMatchObject({
       roundNumber: 5,
@@ -99,15 +99,18 @@ describe("saving a squad", () => {
     await roundsAroundNow(at(2 * HOUR));
     await db.query(`update player_prices set price = 14.0 where player_id in (1, 5)`);
     await db.query(`update players set current_team_id = null where id = 16`);
+    await db.query(`update players set position = null where id in (3, 7)`);
     const players = await listPlayers(db, null);
     const pick = (ids: number[]) => ids.map((id) => players.find((p) => p.id === id)!);
 
     const cases: [number[], number | null][] = [
-      [VALID_SQUAD, 1], // over budget by 3.0
-      [VALID_SQUAD.slice(0, 7), 1], // 7 players
-      [[1, 2, 3, 4, 5, 9, 13, 16], 9], // 4 from one team, one with no team, no captain issue
-      [[2, 2, 6, 7, 10, 11, 14, 15], null], // duplicate, 7 unique, no captain
-      [[1, 2, 3, 4, 5, 6, 7, 8], 99], // two crowded teams, captain not in squad
+      [VALID_SQUAD, 1], // over budget by 8.0
+      [VALID_SQUAD.slice(0, 5), 1], // 5 players
+      [[1, 2, 3, 4, 5, 16], 9], // 4 from one team, one with no team, captain not in squad
+      [[2, 2, 6, 10, 11, 14], null], // duplicate, 5 unique, no captain
+      [[1, 2, 3, 4, 5, 6, 7, 8], 1], // 8 players, two crowded teams
+      [[1, 4, 5, 8, 9, 12], 1], // all guards: no forwards or centre
+      [[1, 2, 3, 5, 6, 7], 1], // two without a position, no centre
     ];
     for (const [ids, captain] of cases) {
       const expected = squadRuleErrors(pick(ids), captain);
@@ -135,7 +138,7 @@ describe("saving a squad", () => {
     await expect(asUser(pg, niamh, (q) => q(`select carry_forward_squads(now())`))).rejects.toThrow(/permission denied/);
 
     expect(await asUser(pg, niamh, (q) => q(`select * from squads`))).toHaveLength(0);
-    expect(await asUser(pg, ciarán, (q) => q(`select * from squad_players`))).toHaveLength(8);
+    expect(await asUser(pg, ciarán, (q) => q(`select * from squad_players`))).toHaveLength(6);
     expect(await asUser(pg, null, (q) => q(`select * from player_prices`))).toHaveLength(16);
   });
 
@@ -151,14 +154,14 @@ describe("saving a squad", () => {
 describe("carry-forward when a round locks", () => {
   it("uses the round 4 squad and captain for round 5 if the user made no changes", async () => {
     await roundsAroundNow(at(2 * HOUR));
-    await saveSquadAt(db, niamh, VALID_SQUAD, 9, at(-9 * DAY));
+    await saveSquadAt(db, niamh, VALID_SQUAD, 11, at(-9 * DAY));
     expect(await getLatestSquad(db, niamh)).toMatchObject({ roundNumber: 4 });
 
     expect(await lockRounds(db, at(1 * HOUR))).toBe(0); // round 5 hasn't locked yet
     expect(await lockRounds(db, at(3 * HOUR))).toBe(1);
     expect(await getLatestSquad(db, niamh)).toMatchObject({
       roundNumber: 5,
-      captainId: 9,
+      captainId: 11,
       playerIds: VALID_SQUAD,
       carriedForward: true,
     });
@@ -167,7 +170,7 @@ describe("carry-forward when a round locks", () => {
 
   it("keeps a squad the user changed for the new round", async () => {
     await roundsAroundNow(at(2 * HOUR));
-    await saveSquadAt(db, niamh, VALID_SQUAD, 9, at(-9 * DAY));
+    await saveSquadAt(db, niamh, VALID_SQUAD, 11, at(-9 * DAY));
     await saveSquad(db, niamh, VALID_SQUAD, 13);
     expect(await lockRounds(db, at(3 * HOUR))).toBe(0);
     expect(await getLatestSquad(db, niamh)).toMatchObject({ roundNumber: 5, captainId: 13, carriedForward: false });

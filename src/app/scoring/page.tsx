@@ -1,42 +1,25 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import {
   SCORING_CATEGORIES,
+  SCORING_LABELS as LABELS,
   SCORING_WEIGHTS,
   scoreStatLine,
-  type ScoringCategory,
+  signedWeight as signed,
   type ScoringStatLine,
 } from "@/scoring/score";
 import styles from "./scoring.module.css";
 
 export const metadata: Metadata = {
-  title: "How scoring works · Hoops Fantasy",
+  title: "How scoring works",
   description: "How a player's box score turns into fantasy points.",
 };
 
-const LABELS: Record<ScoringCategory, string> = {
-  pts: "Point",
-  reb: "Rebound",
-  ast: "Assist",
-  stl: "Steal",
-  blk: "Block",
-  tov: "Turnover",
-};
-
 const EXAMPLE: ScoringStatLine = { pts: 18, reb: 4, ast: 6, stl: 2, blk: 0, tov: 3 };
-
-/** Signed, with a real minus sign: +1.2, −1. */
-function signed(n: number): string {
-  return n < 0 ? `−${Math.abs(n)}` : `+${n}`;
-}
 
 /** Public: everything here comes from SCORING_WEIGHTS, so it always matches the real maths. */
 export default function ScoringPage() {
   return (
     <main>
-      <p className="muted">
-        <Link href="/">Hoops Fantasy</Link>
-      </p>
       <h1>How scoring works</h1>
       <p>Every player earns fantasy points from their box score in each game they play.</p>
 

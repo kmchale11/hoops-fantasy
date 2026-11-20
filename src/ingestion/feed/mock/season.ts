@@ -104,7 +104,8 @@ function buildTeams(): FeedTeam[] {
 }
 
 function buildRosters(teams: FeedTeam[]): Map<string, FeedPlayer[]> {
-  const positions = ["G", "G", "F", "F", "C"];
+  // By roster slot: 5 guards, 5 forwards and 2 centres per team, so every team can supply each slot.
+  const positions = ["G", "G", "F", "F", "C", "G", "F", "C", "G", "F", "G", "F"];
   const rosters = new Map<string, FeedPlayer[]>();
   for (const team of teams) {
     const r = rng(team.externalId);
@@ -113,8 +114,7 @@ function buildRosters(teams: FeedTeam[]): Map<string, FeedPlayer[]> {
       players.push({
         externalId: `mock-p-${team.shortName.toLowerCase()}-${String(i).padStart(2, "0")}`,
         fullName: `${FIRST_NAMES[between(r, 0, FIRST_NAMES.length - 1)]} ${LAST_NAMES[between(r, 0, LAST_NAMES.length - 1)]}`,
-        // Leave every fourth position blank, as a real feed might.
-        position: i % 4 === 3 ? null : positions[i % positions.length],
+        position: positions[i],
       });
     }
     rosters.set(team.externalId, players);

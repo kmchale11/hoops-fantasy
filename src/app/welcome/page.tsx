@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { requireUser, safeNext } from "@/lib/guards";
 import SignUpForm from "./sign-up-form";
 
-export const metadata: Metadata = { title: "Set up your team · Hoops Fantasy" };
+export const metadata: Metadata = { title: "Set up your team" };
 
 export const instant = false;
 

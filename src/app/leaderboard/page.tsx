@@ -5,7 +5,7 @@ import { getLeaderboard, getLeaderboardPosition } from "@/leagues/leaderboard";
 import { requireCompleteAccount } from "@/lib/guards";
 import { getDb } from "@/lib/server-db";
 
-export const metadata: Metadata = { title: "Leaderboard · Hoops Fantasy" };
+export const metadata: Metadata = { title: "Leaderboard" };
 
 export const instant = false;
 
@@ -24,20 +24,26 @@ export default async function LeaderboardPage({ searchParams }: PageProps<"/lead
 
   return (
     <main>
-      <p className="muted">
-        <Link href="/squad">Your squad</Link> · <Link href="/leagues">Your leagues</Link>
-      </p>
+      <span className="eyebrow">
+        Everyone · {board.users} {board.users === 1 ? "manager" : "managers"}
+      </span>
       <h1>Leaderboard</h1>
       {me ? (
-        <p>
-          You&apos;re ranked <strong>{me.rank}</strong> of {board.users} with {points(me.seasonTotal)} points.
-          {me.page !== board.page && (
-            <>
-              {" "}
-              <Link href={pageLink(me.page)}>Show my position</Link>
-            </>
-          )}
-        </p>
+        <section aria-label="Your position" className={table.mine}>
+          <span className={table.mineRank}>#{me.rank}</span>
+          <span className={table.mineText}>
+            <span className={table.mineTeam}>{me.teamName}</span>
+            <span className={table.mineHint}>
+              You&apos;re ranked <strong>{me.rank}</strong> of {board.users} with {points(me.seasonTotal)} points.
+              {me.page !== board.page && (
+                <>
+                  {" "}
+                  <Link href={pageLink(me.page)}>Show my position</Link>
+                </>
+              )}
+            </span>
+          </span>
+        </section>
       ) : (
         <p className="muted">
           <Link href="/squad">Pick a squad</Link> to appear on the leaderboard.

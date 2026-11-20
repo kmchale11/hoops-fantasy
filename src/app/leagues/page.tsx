@@ -7,7 +7,7 @@ import { requireCompleteAccount } from "@/lib/guards";
 import { getDb } from "@/lib/server-db";
 import { CreateLeagueForm, JoinLeagueForm } from "./league-forms";
 
-export const metadata: Metadata = { title: "Leagues · Hoops Fantasy" };
+export const metadata: Metadata = { title: "Leagues" };
 
 export const instant = false;
 
@@ -18,9 +18,6 @@ export default async function LeaguesPage({ searchParams }: PageProps<"/leagues"
 
   return (
     <main>
-      <p className="muted">
-        <Link href="/squad">Your squad</Link> · <Link href="/leaderboard">Leaderboard</Link>
-      </p>
       <h1>Your leagues</h1>
       {left && <p className={styles.notice}>You&apos;ve left the league.</p>}
 

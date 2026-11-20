@@ -139,7 +139,7 @@ describe("reminder card", () => {
     await click("Turn on reminders");
     expect(Notification.requestPermission).toHaveBeenCalledTimes(1);
     expect(subscribe).not.toHaveBeenCalled();
-    expect(container.textContent).toContain("Notifications are blocked for Hoops Fantasy");
+    expect(container.textContent).toContain("Notifications are blocked for Irish Basketball Fantasy");
     expect(await getNotificationSettings(db, niamh)).toMatchObject({ enabled: false });
   });
 

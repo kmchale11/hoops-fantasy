@@ -3,7 +3,7 @@ import Link from "next/link";
 import { requireCompleteAccount } from "@/lib/guards";
 import { JoinLeagueForm } from "../league-forms";
 
-export const metadata: Metadata = { title: "Join a league · Hoops Fantasy" };
+export const metadata: Metadata = { title: "Join a league" };
 
 export const instant = false;
 

@@ -5,7 +5,7 @@ import { getDb } from "@/lib/server-db";
 import { getNotificationSettings } from "@/notifications/settings";
 import NotificationSettings from "./notification-settings";
 
-export const metadata: Metadata = { title: "Notifications · Hoops Fantasy" };
+export const metadata: Metadata = { title: "Notifications" };
 
 export const instant = false;
 

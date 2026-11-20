@@ -1,0 +1,135 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.page h1 {
+  margin: 0;
+}
+
+.lead {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--muted);
+}
+
+.step {
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.step h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+  font-size: 1.5rem;
+}
+
+.step p,
+.step ul {
+  margin: 0 0 8px;
+}
+
+.step > :last-child {
+  margin-bottom: 0;
+}
+
+.step ul:not(.chips, .weights) {
+  padding-left: 20px;
+}
+
+.step strong {
+  color: var(--accent-text);
+}
+
+.number {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 1.1rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.chips li {
+  min-width: 40px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--raised);
+  font-family: var(--heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.chips .flex {
+  border: 1.5px dashed var(--accent);
+  color: var(--accent-text);
+}
+
+.weights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.weights li {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--raised);
+}
+
+.weight {
+  display: block;
+  font-family: var(--heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.per {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.small {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  margin-top: 4px;
+  border-radius: 14px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cta:hover {
+  color: var(--accent-contrast);
+  background: var(--accent-hover);
+}

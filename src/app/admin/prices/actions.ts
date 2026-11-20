@@ -4,7 +4,14 @@ import { revalidatePath } from "next/cache";
 import type { CsvRowError } from "@/ingestion/csv-import";
 import { getDb } from "@/lib/server-db";
 import { getAccount } from "@/lib/session";
-import { importPriceCsv, parsePrice, setPrices, type PriceChange } from "@/squads/prices";
+import {
+  importPriceCsv,
+  parsePosition,
+  parsePrice,
+  setPrices,
+  type PositionChange,
+  type PriceChange,
+} from "@/squads/prices";
 
 export interface PriceEditState {
   /** Player ID to error message. */
@@ -24,23 +31,33 @@ async function isAdmin() {
   return account.status === "ready" && account.profile.isAdmin;
 }
 
-/** Saves every `price-<playerId>` field. A blank field clears the price. All or nothing. */
+/**
+ * Saves every `price-<playerId>` and `position-<playerId>` field. A blank field clears the
+ * price or position. All or nothing.
+ */
 export async function savePrices(_prev: PriceEditState, formData: FormData): Promise<PriceEditState> {
   if (!(await isAdmin())) return { errors: {}, message: "Admins only", saved: null };
 
   const errors: Record<number, string> = {};
   const changes: PriceChange[] = [];
+  const positions: PositionChange[] = [];
   for (const [key, value] of formData) {
-    const match = /^price-(\d+)$/.exec(key);
+    const match = /^(price|position)-(\d+)$/.exec(key);
     if (!match) continue;
-    const playerId = Number(match[1]);
-    const parsed = parsePrice(String(value));
-    if ("error" in parsed) errors[playerId] = parsed.error;
-    else changes.push({ playerId, price: parsed.price });
+    const playerId = Number(match[2]);
+    if (match[1] === "price") {
+      const parsed = parsePrice(String(value));
+      if ("error" in parsed) errors[playerId] = parsed.error;
+      else changes.push({ playerId, price: parsed.price });
+    } else {
+      const parsed = parsePosition(String(value));
+      if ("error" in parsed) errors[playerId] = parsed.error;
+      else positions.push({ playerId, position: parsed.position });
+    }
   }
-  if (Object.keys(errors).length) return { errors, message: "Nothing was saved. Fix the prices marked below.", saved: null };
+  if (Object.keys(errors).length) return { errors, message: "Nothing was saved. Fix the players marked below.", saved: null };
 
-  await setPrices(getDb(), changes, new Date());
+  await setPrices(getDb(), changes, new Date(), positions);
   revalidatePath("/admin/prices");
   return { errors: {}, message: null, saved: changes.length };
 }

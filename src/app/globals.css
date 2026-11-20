@@ -1,25 +1,41 @@
+/*
+ * The look from the design canvas: dark only for the beta, one orange accent, condensed
+ * uppercase headings and card-style rows. Pages use these tokens, never raw colours.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --muted: #5f6368;
-  --border: #d9dce1;
-  --accent: #0b6e4f;
-  --accent-contrast: #ffffff;
-  --danger: #b3261e;
-  --surface: #f5f6f8;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f1115;
-    --foreground: #ececec;
-    --muted: #a0a4ab;
-    --border: #2d3138;
-    --accent: #3fbf8f;
-    --accent-contrast: #0f1115;
-    --danger: #f2827a;
-    --surface: #181b21;
-  }
+  color-scheme: dark;
+  --background: #10141c;
+  /* Cards and list rows. */
+  --surface: #161b27;
+  /* Summary tiles, inputs and anything sitting on a card. */
+  --raised: #1a2030;
+  --border: #2a3245;
+  --foreground: #f2f4f7;
+  --muted: #9aa3b2;
+  /* Fills: buttons, badges, the current tab. Text on it uses --accent-contrast. */
+  --accent: #ff6b1a;
+  --accent-contrast: #10141c;
+  /* Links and accent-coloured text on dark backgrounds. */
+  --accent-text: #ff8a47;
+  /* Highlighted rows: your team in a table, the deadline. */
+  --accent-surface: #2a1a10;
+  --accent-border: #5a3315;
+  /* Accent fills on hover, and accent-coloured notes ("Over budget by 4.5"). */
+  --accent-hover: #ff8a47;
+  --warn: #ffb07f;
+  /* Muted text on --accent-surface (the deadline and your-position cards). */
+  --deadline-text: #d9b9a1;
+  /* Club badges and position tags. */
+  --chip: #262e40;
+  --chip-text: #c9cfda;
+  --danger: #ff9b8f;
+  --success: #7fd8a6;
+  --nav: #0b0e14;
+  --nav-border: #1f2636;
+  --heading: var(--font-heading), "Arial Narrow", sans-serif;
+  --radius: 12px;
+  /* The bottom tab bar's height, which pages leave room for on phones. */
+  --tab-bar: 64px;
 }
 
 * {
@@ -38,7 +54,7 @@ body {
   min-height: 100vh;
   color: var(--foreground);
   background: var(--background);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-body), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -46,13 +62,34 @@ body {
 main {
   max-width: 720px;
   margin: 0 auto;
-  padding: 32px 16px 64px;
+  padding: 24px 16px 48px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--heading);
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
 }
 
 h1 {
-  font-size: 1.75rem;
-  line-height: 1.2;
+  font-size: 2.25rem;
   margin: 0 0 8px;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 24px 0 8px;
+}
+
+h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 16px 0 6px;
 }
 
 p {
@@ -63,6 +100,59 @@ p {
   color: var(--muted);
 }
 
+/* Small uppercase label above a heading or number, e.g. "Round 7 · Super League". */
+.eyebrow {
+  display: block;
+  margin: 0 0 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 a {
-  color: var(--accent);
+  color: var(--accent-text);
+}
+
+a:hover {
+  color: var(--warn);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
+}
+
+/* Hidden on screen, read by screen readers. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Room for the bottom tab bar on phones (see nav/nav.module.css). */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: calc(var(--tab-bar) + env(safe-area-inset-bottom));
+  }
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -100px;
+  z-index: 20;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 700;
+}
+
+.skip:focus {
+  top: 12px;
 }

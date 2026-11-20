@@ -19,3 +19,10 @@
   width: 6.5em;
   padding: 6px 8px;
 }
+
+.flag {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--danger);
+}

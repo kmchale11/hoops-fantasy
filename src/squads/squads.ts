@@ -1,5 +1,6 @@
 import type { Db } from "@/lib/db";
 import { withUserRole } from "@/lib/user-role";
+import type { Position, SquadCandidate } from "./rules";
 
 export interface RoundInfo {
   id: number;
@@ -105,10 +106,23 @@ export async function lockRounds(db: Db, now: Date): Promise<number> {
   return row.n;
 }
 
+export interface RoundResultPlayer extends SquadCandidate {
+  teamShort: string | null;
+  /** The player's points before the captain's multiplier. */
+  points: number;
+  captain: boolean;
+  /** Their team's game in the round was postponed, so they score 0. */
+  postponed: boolean;
+}
+
 export interface RoundResult {
   round: RoundInfo;
   points: number;
-  players: { id: number; name: string; points: number; captain: boolean }[];
+  /** The user's rank among everyone with a squad in the round, ties sharing a rank. */
+  rank: number | null;
+  /** Everyone's average score in the round. */
+  average: number | null;
+  players: RoundResultPlayer[];
 }
 
 /**
@@ -117,26 +131,65 @@ export interface RoundResult {
  */
 export async function getSeasonResults(db: Db, userId: string, now: Date): Promise<RoundResult[]> {
   const rounds = await lockedRounds(db, now);
-  const scores = await db.query<{ round_id: number; points: string }>(
-    `select round_id::int as round_id, points from user_round_scores where user_id = $1`,
+  const scores = await db.query<{ round_id: number; points: string; rank: number; average: string }>(
+    `select round_id, points, rank, average from (
+       select round_id::int as round_id, user_id, points,
+              rank() over (partition by round_id order by points desc)::int as rank,
+              avg(points) over (partition by round_id) as average
+         from user_round_scores) ranked
+      where user_id = $1`,
     [userId],
   );
-  const players = await db.query<{ round_id: number; id: number; name: string; points: string; captain: boolean }>(
-    `select s.round_id::int as round_id, p.id::int as id, p.full_name as name,
-            coalesce(rp.points, 0) as points, p.id = s.captain_player_id as captain
+  const players = await db.query<{
+    round_id: number;
+    id: number;
+    name: string;
+    team_id: number | null;
+    team_name: string | null;
+    team_short: string | null;
+    position: Position | null;
+    price: string;
+    points: string;
+    captain: boolean;
+    postponed: boolean;
+  }>(
+    `select s.round_id::int as round_id, p.id::int as id, p.full_name as name, t.id::int as team_id,
+            t.name as team_name, t.short_name as team_short, p.position, sp.price_at_pick as price,
+            coalesce(rp.points, 0) as points, p.id = s.captain_player_id as captain,
+            rp.points is null and exists (
+              select 1 from fixtures f join rounds r on r.id = s.round_id
+               where f.status = 'postponed' and t.id in (f.home_team_id, f.away_team_id)
+                 and f.tip_off >= r.starts_at and f.tip_off < r.ends_at) as postponed
        from squads s
        join squad_players sp on sp.squad_id = s.id
        join players p on p.id = sp.player_id
+       left join teams t on t.id = p.current_team_id
        left join player_round_points rp on rp.player_id = sp.player_id and rp.round_id = s.round_id
       where s.user_id = $1
       order by p.id = s.captain_player_id desc, coalesce(rp.points, 0) desc, p.full_name`,
     [userId],
   );
-  return rounds.map((round) => ({
-    round,
-    points: Number(scores.find((s) => s.round_id === round.id)?.points ?? 0),
-    players: players
-      .filter((p) => p.round_id === round.id)
-      .map(({ id, name, points, captain }) => ({ id, name, points: Number(points), captain })),
-  }));
+  return rounds.map((round) => {
+    const score = scores.find((s) => s.round_id === round.id);
+    return {
+      round,
+      points: Number(score?.points ?? 0),
+      rank: score?.rank ?? null,
+      average: score ? Number(score.average) : null,
+      players: players
+        .filter((p) => p.round_id === round.id)
+        .map((p) => ({
+          id: p.id,
+          name: p.name,
+          teamId: p.team_id,
+          teamName: p.team_name,
+          teamShort: p.team_short,
+          position: p.position,
+          price: Number(p.price),
+          points: Number(p.points),
+          captain: p.captain,
+          postponed: p.postponed,
+        })),
+    };
+  });
 }

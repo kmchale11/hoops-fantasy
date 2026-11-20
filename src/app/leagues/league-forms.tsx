@@ -2,6 +2,7 @@
 
 import { useActionState, useState, useSyncExternalStore } from "react";
 import styles from "@/app/forms.module.css";
+import { APP_NAME } from "@/lib/app-identity";
 import { nativeShell } from "@/lib/native/shell";
 import { createLeagueAction, joinLeagueAction, type LeagueFormState } from "./actions";
 
@@ -80,7 +81,7 @@ const noSubscribe = () => () => {};
 /** The invite message: the league name and its full /join/<code> link, built from the address the user is on. */
 export function inviteMessage(leagueName: string, path: string, origin: string) {
   const url = new URL(path, origin).toString();
-  return { title: `Join ${leagueName} on Hoops Fantasy`, text: `Join my league "${leagueName}" on Hoops Fantasy`, url };
+  return { title: `Join ${leagueName} on ${APP_NAME}`, text: `Join my league "${leagueName}" on ${APP_NAME}`, url };
 }
 
 /**

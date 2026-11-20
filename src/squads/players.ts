@@ -1,5 +1,5 @@
 import type { Db } from "@/lib/db";
-import { isAvailable, type SquadCandidate } from "./rules";
+import { isAvailable, type Position, type SquadCandidate } from "./rules";
 
 export interface PlayerListing extends SquadCandidate {
   externalId: string;
@@ -18,12 +18,13 @@ export async function listPlayers(db: Db, pointsRoundId: number | null): Promise
     teamId: number | null;
     teamName: string | null;
     teamShort: string | null;
+    position: Position | null;
     price: string | null;
     roundPoints: string | null;
   }>(
     `select p.id::int as id, p.external_id as "externalId", p.full_name as name,
             t.id::int as "teamId", t.name as "teamName", t.short_name as "teamShort",
-            pp.price, rp.points as "roundPoints"
+            p.position, pp.price, rp.points as "roundPoints"
        from players p
        left join teams t on t.id = p.current_team_id
        left join player_prices pp on pp.player_id = p.id

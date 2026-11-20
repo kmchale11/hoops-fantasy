@@ -5,7 +5,7 @@ import { listPlayers } from "@/squads/players";
 import { PriceEditor, PriceImport } from "./price-forms";
 
 export const metadata: Metadata = {
-  title: "Player prices · Hoops Fantasy",
+  title: "Player prices and positions",
   robots: { index: false },
 };
 
@@ -16,16 +16,29 @@ export default async function PricesPage() {
   await requireAdminPage();
   const players = await listPlayers(getDb(), null);
   const unpriced = players.filter((p) => p.price === null).length;
+  const unpositioned = players.filter((p) => p.position === null).length;
 
   return (
     <main>
-      <h1>Player prices</h1>
+      <h1>Player prices and positions</h1>
       <p className="muted">
         Set once before the season. Unpriced players can&apos;t be picked
         {unpriced > 0 ? ` (${unpriced} unpriced right now)` : ""}.
       </p>
+      {unpositioned > 0 && (
+        <p role="status">
+          {unpositioned === 1 ? "1 player needs" : `${unpositioned} players need`} a position. Until then they can only
+          be picked for the flex slot.
+        </p>
+      )}
       <PriceEditor
-        players={players.map((p) => ({ id: p.id, name: p.name, team: p.teamName, price: p.price }))}
+        players={players.map((p) => ({
+          id: p.id,
+          name: p.name,
+          team: p.teamName,
+          price: p.price,
+          position: p.position,
+        }))}
       />
       <h2>Import from a spreadsheet</h2>
       <PriceImport />

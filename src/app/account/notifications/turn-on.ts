@@ -1,5 +1,6 @@
 "use client";
 
+import { APP_NAME } from "@/lib/app-identity";
 import type { NotificationSettings } from "@/notifications/settings";
 import { disableNotifications, enableNotifications } from "./actions";
 
@@ -12,10 +13,10 @@ export type TurnOnOutcome =
 
 export const HELP: Record<"denied" | "install-first" | "unsupported", string> = {
   denied:
-    "Notifications are blocked for Hoops Fantasy. To allow them, open your phone's Settings (or this browser's site settings), turn notifications on for Hoops Fantasy, then try again.",
+    `Notifications are blocked for ${APP_NAME}. To allow them, open your phone's Settings (or this browser's site settings), turn notifications on for ${APP_NAME}, then try again.`,
   "install-first":
-    "On iPhone, notifications work once Hoops Fantasy is on your Home Screen: tap Share, then Add to Home Screen, and open it from there. Or get the app from the App Store.",
-  unsupported: "This browser can't show notifications. Try Chrome, Edge, Firefox or Safari, or the Hoops Fantasy app.",
+    `On iPhone, notifications work once ${APP_NAME} is on your Home Screen: tap Share, then Add to Home Screen, and open it from there. Or get the app from the App Store.`,
+  unsupported: `This browser can't show notifications. Try Chrome, Edge, Firefox or Safari, or the ${APP_NAME} app.`,
 };
 
 function isIos(): boolean {
